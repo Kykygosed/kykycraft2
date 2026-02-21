@@ -2,658 +2,707 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>WebCraft</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KYKY RADIO — Utilisateur</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #07080a;
+  --panel: #0f1113;
+  --panel-b: #13161a;
+  --panel-c: #1a1e24;
+  --border: #232830;
+  --border-hi: #363d48;
+  --amber: #ffaa00;
+  --amber-lo: #3d2800;
+  --amber-mid: #8a5a00;
+  --green: #00e647;
+  --green-lo: #002d10;
+  --red: #ff3333;
+  --red-lo: #2d0808;
+  --txt: #b8bec8;
+  --txt-lo: #4a5060;
+  --txt-mid: #7a8290;
+  --lcd: #080f08;
+  --unicom: #00c8ff;
+  --unicom-lo: #002d3a;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#1a1a2e;overflow:hidden;font-family:'Courier New',monospace;}
-#c{display:block;}
-#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;pointer-events:none;}
-#cross::before{content:'';position:absolute;width:2px;height:100%;left:10px;background:#fff;box-shadow:0 0 3px #000;}
-#cross::after{content:'';position:absolute;width:100%;height:2px;top:10px;background:#fff;box-shadow:0 0 3px #000;}
-#hud{position:fixed;bottom:10px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;}
-#hotbar{display:flex;gap:4px;background:rgba(0,0,0,0.65);border:2px solid #777;padding:4px;border-radius:5px;}
-.slot{width:52px;height:52px;border:2px solid #555;background:rgba(70,70,70,0.6);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;border-radius:3px;transition:border-color .1s;}
-.slot.sel{border-color:#fff;background:rgba(140,130,70,0.75);}
-.slot em{position:absolute;top:1px;left:3px;font-size:9px;color:#aaa;font-style:normal;}
-#dbg{position:fixed;top:8px;left:8px;color:#fff;font-size:12px;line-height:1.8;text-shadow:1px 1px 2px #000;pointer-events:none;}
-#keys{position:fixed;top:8px;right:8px;color:#ccc;font-size:11px;line-height:1.9;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right;}
-#bname{color:#fff;font-size:13px;text-shadow:1px 1px 2px #000;}
-#menu{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:20;}
-#menu h1{font-size:56px;color:#7ec850;text-shadow:4px 4px 0 #264d08;letter-spacing:4px;margin-bottom:10px;}
-#menu p{color:#aaa;margin:4px 0;}
-#playbtn{margin-top:24px;padding:14px 44px;background:#4caf50;border:none;color:#fff;font-size:20px;font-family:inherit;cursor:pointer;border-radius:5px;box-shadow:0 5px 0 #2e7d32;letter-spacing:1px;}
-#playbtn:hover{background:#66bb6a;}
-#playbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #2e7d32;}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+}
+.layout{display:flex;flex-direction:column;height:100%;}
+
+/* TOPBAR */
+.topbar{
+  background:#090b0d;border-bottom:1px solid var(--border);
+  padding:0 20px;height:44px;display:flex;align-items:center;gap:16px;flex-shrink:0;
+}
+.logo{font-family:'Orbitron',monospace;font-size:15px;color:var(--amber);letter-spacing:4px;font-weight:700;}
+.sep{width:1px;height:20px;background:var(--border);}
+.topbar-sub{font-size:11px;color:var(--txt-lo);letter-spacing:3px;text-transform:uppercase;}
+.topbar-right{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txt-lo);}
+
+/* MAIN */
+.main{flex:1;display:flex;gap:16px;padding:16px;overflow:auto;align-items:flex-start;justify-content:center;}
+
+/* CARD */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
+.card-head{
+  background:#0b0d0f;border-bottom:1px solid var(--border);
+  padding:7px 14px;font-size:10px;font-weight:700;
+  letter-spacing:3px;color:var(--txt-lo);text-transform:uppercase;
+}
+
+/* ── VHF BOX ── */
+.vhf-box{
+  width:310px;flex-shrink:0;
+  background:var(--panel-b);border:2px solid var(--border-hi);
+  border-radius:7px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.vhf-top{
+  background:#090b0d;border-bottom:1px solid var(--border);
+  padding:6px 12px;display:flex;justify-content:space-between;align-items:center;
+}
+.vhf-brand{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--txt-lo);}
+
+/* LCD */
+.lcd-wrap{margin:12px;background:var(--lcd);border-radius:3px;
+  border:1px solid #0a180a;box-shadow:inset 0 2px 12px rgba(0,0,0,.7);padding:10px 14px;}
+.lcd-top{display:flex;align-items:baseline;gap:6px;justify-content:center;}
+.lcd-freq{
+  font-family:'Share Tech Mono',monospace;font-size:38px;
+  color:var(--amber);letter-spacing:3px;
+  text-shadow:0 0 24px rgba(255,170,0,.5),0 0 48px rgba(255,170,0,.2);
+  transition:all .25s;
+}
+.lcd-freq.unicom{color:var(--unicom);text-shadow:0 0 24px rgba(0,200,255,.5);}
+.lcd-freq.off{color:var(--amber-lo);text-shadow:none;}
+.lcd-unit{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--amber-mid);align-self:flex-end;padding-bottom:5px;}
+.lcd-chan{
+  text-align:center;font-family:'Orbitron',monospace;
+  font-size:9px;color:var(--txt-lo);letter-spacing:3px;margin-top:5px;
+  transition:all .25s;
+}
+.lcd-chan.unicom{color:var(--unicom);}
+
+/* Indicators */
+.indics{display:flex;gap:8px;margin:0 12px 12px;}
+.indic{
+  flex:1;background:#0a0c0e;border:1px solid var(--border);border-radius:3px;
+  padding:8px 8px;display:flex;align-items:center;gap:8px;
+}
+.led{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:all .08s;}
+.led-r{background:var(--red-lo);}
+.led-g{background:var(--green-lo);}
+.led-r.on{background:var(--red);box-shadow:0 0 10px var(--red),0 0 20px rgba(255,51,51,.4);}
+.led-g.on{background:var(--green);box-shadow:0 0 10px var(--green),0 0 20px rgba(0,230,71,.4);}
+.led-lbl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--txt-lo);font-weight:700;}
+.led-who{font-size:9px;color:var(--txt-lo);margin-left:auto;font-family:'Share Tech Mono',monospace;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* TX Banner */
+.tx-banner{
+  display:none;margin:0 12px 10px;padding:6px 10px;
+  background:rgba(255,51,51,.08);border:1px solid rgba(255,51,51,.25);
+  border-radius:3px;font-family:'Orbitron',monospace;
+  font-size:9px;color:var(--red);letter-spacing:2px;text-align:center;
+  animation:blink-tx 1.2s step-start infinite;
+}
+.tx-banner.show{display:block;}
+@keyframes blink-tx{50%{opacity:.4;}}
+
+/* PTT */
+.ptt-wrap{margin:0 12px 12px;}
+.ptt-btn{
+  width:100%;padding:15px;background:#140e0e;border:2px solid #2e1818;
+  border-radius:4px;color:#884444;font-family:'Orbitron',monospace;
+  font-size:11px;letter-spacing:3px;cursor:pointer;transition:all .05s;
+  user-select:none;text-transform:uppercase;
+}
+.ptt-btn:not(.locked):not(:disabled):hover{border-color:#553333;color:#aa5555;}
+.ptt-btn.tx{
+  background:#1c0808;border-color:var(--red);color:var(--red);
+  box-shadow:0 0 24px rgba(255,51,51,.2);
+}
+.ptt-btn.locked,.ptt-btn:disabled{opacity:.45;cursor:not-allowed;}
+.ptt-hint{text-align:center;font-size:10px;color:var(--txt-lo);margin-top:5px;letter-spacing:2px;}
+
+/* Audio devices section */
+.dev-wrap{margin:0 12px 12px;}
+.dev-row{display:flex;flex-direction:column;gap:6px;}
+.dev-label{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;}
+select.dev-sel{
+  width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:6px 10px;color:var(--txt);font-family:'Rajdhani',sans-serif;
+  font-size:12px;outline:none;cursor:pointer;
+}
+
+/* Callsign */
+.cs-wrap{margin:0 12px 12px;}
+input.cs-in{
+  width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:7px 10px;color:var(--amber);font-family:'Orbitron',monospace;
+  font-size:12px;letter-spacing:2px;outline:none;text-transform:uppercase;
+}
+input.cs-in::placeholder{color:var(--amber-lo);}
+input.cs-in:focus{border-color:var(--amber-lo);}
+.cs-label{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+
+/* Divider */
+.vhf-div{height:1px;background:var(--border);margin:0 12px 12px;}
+
+/* ── FREQUENCY PANEL ── */
+.freq-panel{width:260px;flex-shrink:0;}
+
+.freq-item{
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  transition:background .12s;position:relative;
+}
+.freq-item:last-child{border-bottom:none;}
+.freq-item:hover{background:var(--panel-c);}
+.freq-item.tuned{background:#0e1a0e;}
+.freq-item.tuned::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);}
+.freq-item.unicom.tuned::before{background:var(--unicom);}
+
+.fi-dot{width:7px;height:7px;border-radius:50%;background:var(--green-lo);flex-shrink:0;}
+.fi-dot.on{background:var(--green);box-shadow:0 0 7px var(--green);}
+.fi-dot.always{background:var(--unicom-lo);}
+.freq-item.tuned .fi-dot.always{background:var(--unicom);box-shadow:0 0 7px var(--unicom);}
+
+.fi-info{flex:1;}
+.fi-chan{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt);font-weight:700;}
+.fi-detail{font-size:10px;color:var(--txt-lo);margin-top:2px;letter-spacing:1px;}
+.fi-badge{
+  font-family:'Share Tech Mono',monospace;font-size:12px;
+  background:var(--lcd);border:1px solid var(--border);
+  padding:3px 8px;border-radius:2px;color:var(--amber);
+}
+.fi-badge.unicom{color:var(--unicom);}
+.freq-item.tuned .fi-chan{color:var(--green);}
+.freq-item.unicom.tuned .fi-chan{color:var(--unicom);}
+
+.freq-offline{opacity:.4;}
+.freq-offline .fi-badge{color:var(--txt-lo);}
+
+.freq-hint{padding:14px;font-size:10px;color:var(--txt-lo);letter-spacing:1px;text-align:center;border-top:1px solid var(--border);}
+
+/* STATUS BAR */
+.statusbar{
+  background:#06070a;border-top:1px solid var(--border);
+  padding:5px 20px;display:flex;gap:20px;flex-shrink:0;
+}
+.si{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--txt-lo);letter-spacing:1px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:#1a1e24;transition:background .3s;}
+.sdot.ok{background:var(--green);}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="cross"></div>
-<div id="dbg"></div>
-<div id="keys">ZQSD/WASD : Bouger<br>Espace : Sauter<br>Shift : Sprint<br>F : Vol<br>Clic G : Casser<br>Clic D : Placer<br>Molette/1-9 : Bloc<br>Échap : Menu</div>
-<div id="hud"><div id="bname"></div><div id="hotbar"></div></div>
-<div id="menu">
-  <h1>⛏ WebCraft</h1>
-  <p>Monde infini • Génération procédurale • Biomes</p>
-  <p style="font-size:12px;color:#666;margin-top:8px;">Textures générées procéduralement en Canvas 2D</p>
-  <button id="playbtn">▶ Jouer</button>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<div class="layout">
+
+  <div class="topbar">
+    <span class="logo">KYKY</span>
+    <div class="sep"></div>
+    <span class="topbar-sub">Station Radio Utilisateur</span>
+    <div class="topbar-right" id="uidLabel"></div>
+  </div>
+
+  <div class="main">
+
+    <!-- VHF Box -->
+    <div class="vhf-box">
+      <div class="vhf-top">
+        <span class="vhf-brand">VHF COM — TRANSCEIVER</span>
+        <span class="vhf-brand">KYKY-500</span>
+      </div>
+
+      <!-- Callsign -->
+      <div class="cs-wrap" style="margin-top:12px;">
+        <div class="cs-label">Votre pseudo Minecraft</div>
+        <input class="cs-in" id="callsignInput" placeholder="Steve" maxlength="16">
+      </div>
+
+      <div class="vhf-div"></div>
+
+      <!-- LCD Display -->
+      <div class="lcd-wrap">
+        <div class="lcd-top">
+          <div class="lcd-freq off" id="lcdFreq">---.---</div>
+          <div class="lcd-unit">MHz</div>
+        </div>
+        <div class="lcd-chan" id="lcdChan">— NON CONNECTÉ —</div>
+      </div>
+
+      <div class="tx-banner" id="txBanner">● TX EN COURS</div>
+
+      <div class="indics">
+        <div class="indic">
+          <div class="led led-r" id="ledExt"></div>
+          <div class="led-lbl">EXT</div>
+          <div class="led-who" id="extWho"></div>
+        </div>
+        <div class="indic">
+          <div class="led led-g" id="ledVous"></div>
+          <div class="led-lbl">VOUS</div>
+        </div>
+      </div>
+
+      <div class="ptt-wrap">
+        <button class="ptt-btn" id="pttBtn" disabled
+          onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
+          PTT — APPUYER POUR ÉMETTRE
+        </button>
+        <div class="ptt-hint">ESPACE pour activer · Sélectionnez une fréquence</div>
+      </div>
+
+      <div class="vhf-div"></div>
+
+      <!-- Device selectors -->
+      <div class="dev-wrap">
+        <div class="dev-row" style="margin-bottom:8px;">
+          <div class="dev-label">Entrée Micro</div>
+          <select class="dev-sel" id="inDev"></select>
+        </div>
+        <div class="dev-row">
+          <div class="dev-label">Sortie Audio</div>
+          <select class="dev-sel" id="outDev"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequency Selector -->
+    <div class="card freq-panel">
+      <div class="card-head">Sélecteur de fréquence</div>
+
+      <!-- UNICOM – always available -->
+      <div class="freq-item unicom tuned" id="item-UNICOM" onclick="tuneFreq('UNICOM','122.800',this)">
+        <div class="fi-dot always" id="dot-UNICOM"></div>
+        <div class="fi-info">
+          <div class="fi-chan">UNICOM</div>
+          <div class="fi-detail">Fréquence libre · Toujours active</div>
+        </div>
+        <div class="fi-badge unicom">122.800</div>
+      </div>
+
+      <!-- Controller positions – shown dynamically -->
+      <div id="ctrlFreqList"></div>
+
+      <div class="freq-hint">Cliquez sur une fréquence pour vous y connecter</div>
+    </div>
+
+  </div>
+
+  <div class="statusbar">
+    <div class="si"><div class="sdot" id="sdMic"></div><span id="sMic">Micro: —</span></div>
+    <div class="si"><div class="sdot" id="sdConn"></div><span id="sConn">Déconnecté</span></div>
+    <div class="si" style="margin-left:auto;font-size:10px;opacity:.35;"><span id="sUID"></span></div>
+  </div>
+
+</div><!-- /layout -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// ════════════════════════════════════════════════════════
-//  CONSTANTS
-// ════════════════════════════════════════════════════════
-const CS=16, CH=80, SEA=40, RD=3;
-
-const B={AIR:0,GRASS:1,DIRT:2,STONE:3,SAND:4,WOOD:5,
-         LEAVES:6,WATER:7,SNOW:8,GRAVEL:9,
-         COAL:10,IRON:11,GOLD:12,DIAMOND:13,
-         BEDROCK:14,GLASS:15,BRICK:16,PLANKS:17};
-
-// Per-block: base RGB for texture generation
-const BD={
-  [B.GRASS]: {r:106,g:176,b:76, name:'Herbe'},
-  [B.DIRT]:  {r:139,g:105,b:20, name:'Terre'},
-  [B.STONE]: {r:136,g:136,b:136,name:'Pierre'},
-  [B.SAND]:  {r:219,g:200,b:108,name:'Sable'},
-  [B.WOOD]:  {r:139,g:96, b:64, name:'Bois'},
-  [B.LEAVES]:{r:45, g:138,b:45, name:'Feuilles',alpha:true},
-  [B.WATER]: {r:30, g:100,b:200,name:'Eau',     alpha:true,op:.72},
-  [B.SNOW]:  {r:232,g:238,b:240,name:'Neige'},
-  [B.GRAVEL]:{r:122,g:128,b:128,name:'Graviers'},
-  [B.COAL]:  {r:80, g:80, b:80, name:'Charbon'},
-  [B.IRON]:  {r:150,g:140,b:130,name:'Fer'},
-  [B.GOLD]:  {r:255,g:215,b:0,  name:'Or'},
-  [B.DIAMOND]:{r:0, g:188,b:212,name:'Diamant'},
-  [B.BEDROCK]:{r:38,g:38, b:38, name:'Roche-mère'},
-  [B.GLASS]: {r:173,g:216,b:230,name:'Verre',  alpha:true,op:.45},
-  [B.BRICK]: {r:181,g:90, b:48, name:'Brique'},
-  [B.PLANKS]:{r:192,g:144,b:96, name:'Planches'},
+// ══════════════════════════════════════════
+//  FIREBASE
+// ══════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyDxDzLbCnqYYVknoyHMzbE0gB_SRVLpgiw",
+  authDomain: "kyky-c3471.firebaseapp.com",
+  databaseURL: "https://kyky-c3471-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kyky-c3471",
+  storageBucket: "kyky-c3471.firebasestorage.app",
+  messagingSenderId: "658643330578",
+  appId: "1:658643330578:web:758dc26d5504a503e39acb",
+  measurementId: "G-245RE41YQK"
 };
-const HOTBAR=[B.GRASS,B.DIRT,B.STONE,B.SAND,B.WOOD,B.GLASS,B.BRICK,B.PLANKS,B.LEAVES];
-const EMO={[B.GRASS]:'🟩',[B.DIRT]:'🟫',[B.STONE]:'⬜',[B.SAND]:'🟨',
-           [B.WOOD]:'🪵',[B.LEAVES]:'🌿',[B.GLASS]:'🪟',[B.BRICK]:'🧱',[B.PLANKS]:'📦'};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-// ════════════════════════════════════════════════════════
-//  NOISE  (classic Perlin 2D)
-// ════════════════════════════════════════════════════════
-class Noise{
-  constructor(seed=42){
-    const q=new Uint8Array(256);
-    for(let i=0;i<256;i++)q[i]=i;
-    let s=seed>>>0;
-    for(let i=255;i>0;i--){s=(Math.imul(s,1664525)+1013904223)>>>0;const j=s%(i+1);[q[i],q[j]]=[q[j],q[i]];}
-    this.p=new Uint8Array(512);for(let i=0;i<512;i++)this.p[i]=q[i&255];
+// ══════════════════════════════════════════
+//  IDENTITY
+// ══════════════════════════════════════════
+let uid = sessionStorage.getItem('usr_uid');
+if (!uid) {
+  uid = 'USR_' + Math.random().toString(36).substr(2,8).toUpperCase();
+  sessionStorage.setItem('usr_uid', uid);
+}
+document.getElementById('uidLabel').textContent = uid;
+document.getElementById('sUID').textContent = 'UID: ' + uid;
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let currentChan = null; // {name, freq}
+let localStream = null;
+let pttActive = false, pttLocked = false;
+let inDevId = null, outDevId = null;
+let callsign = '';
+
+const peers = {};
+const audEls = {};
+const candQueues = {};
+let activeRefs = [];
+
+const STUN = { iceServers:[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:'stun:stun2.l.google.com:19302'}
+]};
+
+// ══════════════════════════════════════════
+//  DEVICES
+// ══════════════════════════════════════════
+async function loadDevices() {
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({audio:true});
+    s.getTracks().forEach(t => t.stop());
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const ins = devs.filter(d => d.kind==='audioinput');
+    const outs = devs.filter(d => d.kind==='audiooutput');
+    const inSel = document.getElementById('inDev');
+    const outSel = document.getElementById('outDev');
+    inSel.innerHTML = ins.map((d,i) => `<option value="${d.deviceId}">${d.label||'Micro '+(i+1)}</option>`).join('');
+    outSel.innerHTML = outs.map((d,i) => `<option value="${d.deviceId}">${d.label||'Sortie '+(i+1)}</option>`).join('');
+    inDevId = ins[0]?.deviceId;
+    outDevId = outs[0]?.deviceId;
+    inSel.onchange = () => { inDevId = inSel.value; };
+    outSel.onchange = () => {
+      outDevId = outSel.value;
+      Object.values(audEls).forEach(a => { if(a.setSinkId) a.setSinkId(outDevId).catch(()=>{}); });
+    };
+    document.getElementById('sdMic').classList.add('ok');
+    document.getElementById('sMic').textContent = 'Micro: Prêt';
+  } catch(e) {
+    document.getElementById('sMic').textContent = 'Micro: Accès refusé';
   }
-  _f(t){return t*t*t*(t*(t*6-15)+10);}
-  _g(h,x,y){h&=3;return((h<2)?((h&1)?-x:x):((h&1)?-y:y))+((h<2)?((h&2)?-y:y):((h&2)?-x:x));}
-  n(x,y){
-    const X=Math.floor(x)&255,Y=Math.floor(y)&255;
-    x-=Math.floor(x);y-=Math.floor(y);
-    const u=this._f(x),v=this._f(y),A=this.p[X]+Y,Bb=this.p[X+1]+Y;
-    return(1-v)*((1-u)*this._g(this.p[A],x,y)+u*this._g(this.p[Bb],x-1,y))
-          +v   *((1-u)*this._g(this.p[A+1],x,y-1)+u*this._g(this.p[Bb+1],x-1,y-1));
-  }
-  oct(x,y,o,l=2,p=0.5){let v=0,a=1,f=1,m=0;for(let i=0;i<o;i++){v+=this.n(x*f,y*f)*a;m+=a;a*=p;f*=l;}return v/m;}
 }
 
-// ════════════════════════════════════════════════════════
-//  TEXTURE GENERATION
-// ════════════════════════════════════════════════════════
-const TEX_CACHE={};
-function makeTex(bid){
-  if(TEX_CACHE[bid]) return TEX_CACHE[bid];
-  const d=BD[bid]; if(!d) return null;
-  const SZ=32;
-  const cv=document.createElement('canvas');
-  cv.width=SZ; cv.height=SZ;
-  const ctx=cv.getContext('2d');
+// ══════════════════════════════════════════
+//  FREQUENCY TUNING
+// ══════════════════════════════════════════
+async function tuneFreq(chanName, freq, el) {
+  // Leave previous channel
+  if (currentChan) {
+    await leaveChannel();
+  }
 
-  // Fill base color with deterministic pixel noise
-  const img=ctx.createImageData(SZ,SZ);
-  const px=img.data;
-  for(let y=0;y<SZ;y++){
-    for(let x=0;x<SZ;x++){
-      const i=(y*SZ+x)*4;
-      // deterministic hash noise — no Math.random()
-      const h=Math.sin(x*127.1+y*311.7+bid*91.3)*43758.5453%1;
-      const n=(h-0.5)*22;
-      px[i  ]=Math.min(255,Math.max(0,(d.r+n)|0));
-      px[i+1]=Math.min(255,Math.max(0,(d.g+n)|0));
-      px[i+2]=Math.min(255,Math.max(0,(d.b+n)|0));
-      px[i+3]=255;
+  // Get callsign
+  callsign = document.getElementById('callsignInput').value.trim() || ('Joueur_' + uid.slice(-4));
+
+  // Get microphone if needed
+  if (!localStream) {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: inDevId ? {exact:inDevId} : undefined, echoCancellation:true, noiseSuppression:true },
+        video: false
+      });
+      localStream.getAudioTracks().forEach(t => t.enabled = false);
+    } catch(e) {
+      alert('Impossible d\'accéder au microphone:\n'+e.message);
+      return;
     }
   }
-  ctx.putImageData(img,0,0);
 
-  // ── Per-block decorations ──
-  switch(bid){
-    case B.GRASS:
-      ctx.fillStyle='#5dc43d';ctx.fillRect(0,0,SZ,8);
-      ctx.fillStyle='#4ab030';ctx.fillRect(0,0,SZ,3);
-      for(let i=0;i<14;i++){ctx.fillStyle='rgba(80,200,50,.6)';ctx.fillRect((i*71+3)%SZ,(i*37)%6,1,3+((i*13)%3));}
-      break;
-    case B.STONE:
-      ctx.strokeStyle='rgba(50,50,50,.35)';ctx.lineWidth=1;
-      [[0,10,10,6],[10,6,22,10],[0,22,10,18],[10,18,22,22],[22,10,32,14]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
-      break;
-    case B.WOOD:
-      // bark lines
-      for(let i=0;i<SZ;i+=5){ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(i,0,2,SZ);}
-      ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.arc(16,16,5,0,Math.PI*2);ctx.stroke();
-      ctx.beginPath();ctx.arc(16,16,10,0,Math.PI*2);ctx.stroke();
-      break;
-    case B.BRICK:
-      ctx.fillStyle='rgba(0,0,0,.28)';
-      for(let r=0;r<4;r++){
-        ctx.fillRect(0,r*8+6,SZ,2);
-        const off=r%2===0?0:8;
-        ctx.fillRect(off+7,r*8,2,6);
-      }
-      // lighter mortar hint
-      ctx.fillStyle='rgba(255,255,255,.06)';
-      for(let r=0;r<4;r++){ctx.fillRect(0,r*8+7,SZ,1);}
-      break;
-    case B.GLASS:
-      ctx.clearRect(0,0,SZ,SZ);
-      ctx.fillStyle='rgba(173,220,235,.38)';ctx.fillRect(0,0,SZ,SZ);
-      ctx.strokeStyle='rgba(230,250,255,.9)';ctx.lineWidth=2;ctx.strokeRect(1,1,SZ-2,SZ-2);
-      ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(2,2);ctx.lineTo(SZ-2,SZ-2);ctx.stroke();
-      break;
-    case B.LEAVES:
-      for(let i=0;i<60;i++){
-        ctx.fillStyle=i%2?'rgba(30,130,30,.7)':'rgba(60,160,30,.7)';
-        ctx.fillRect((i*71)%SZ,(i*53)%SZ,2,2);
-      }
-      break;
-    case B.SAND:
-      for(let i=0;i<35;i++){ctx.fillStyle='rgba(160,130,0,.22)';ctx.fillRect((i*83)%SZ,(i*61)%SZ,2,1);}
-      break;
-    case B.PLANKS:
-      for(let y=0;y<SZ;y+=8){
-        ctx.fillStyle='rgba(0,0,0,.16)';ctx.fillRect(0,y,SZ,1);
-        ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,y+1,SZ,3);
-      }
-      ctx.fillStyle='rgba(0,0,0,.1)';ctx.fillRect(SZ/2,0,1,SZ);
-      break;
-    case B.COAL:
-      ctx.fillStyle='rgba(15,15,15,.9)';
-      for(let i=0;i<6;i++)ctx.fillRect(((i*79+3)%22)+3,((i*53+3)%22)+3,4,4);
-      ctx.fillStyle='rgba(100,100,100,.4)';
-      for(let i=0;i<3;i++)ctx.fillRect(((i*67+6)%18)+5,((i*43+6)%18)+5,2,2);
-      break;
-    case B.IRON:
-      ctx.fillStyle='rgba(210,180,160,.6)';
-      for(let i=0;i<4;i++)ctx.fillRect(((i*71+4)%20)+4,((i*53+4)%20)+4,5,4);
-      break;
-    case B.GOLD:
-      ctx.fillStyle='rgba(255,230,0,.78)';
-      for(let i=0;i<5;i++)ctx.fillRect(((i*73+4)%20)+4,((i*59+4)%20)+4,5,5);
-      ctx.fillStyle='rgba(255,255,150,.5)';
-      for(let i=0;i<3;i++)ctx.fillRect(((i*61+7)%16)+6,((i*47+7)%16)+6,2,2);
-      break;
-    case B.DIAMOND:
-      ctx.fillStyle='rgba(0,230,255,.88)';
-      for(let i=0;i<5;i++){
-        const ox=((i*73+4)%20)+4,oy=((i*59+4)%20)+4;
-        ctx.beginPath();ctx.moveTo(ox+3,oy);ctx.lineTo(ox+6,oy+3);ctx.lineTo(ox+3,oy+6);ctx.lineTo(ox,oy+3);ctx.closePath();ctx.fill();
-      }
-      break;
-    case B.WATER:
-      ctx.clearRect(0,0,SZ,SZ);
-      ctx.fillStyle=`rgba(${d.r},${d.g},${d.b},.7)`;ctx.fillRect(0,0,SZ,SZ);
-      ctx.strokeStyle='rgba(100,180,255,.4)';ctx.lineWidth=1;
-      for(let y=5;y<SZ;y+=8){ctx.beginPath();ctx.moveTo(0,y);ctx.bezierCurveTo(8,y-3,24,y+3,32,y);ctx.stroke();}
-      break;
-    case B.SNOW:
-      for(let i=0;i<18;i++){ctx.fillStyle='rgba(255,255,255,.65)';ctx.fillRect((i*79)%SZ,(i*53)%SZ,2,1);}
-      break;
-    case B.BEDROCK:
-      ctx.fillStyle='rgba(8,8,8,.75)';
-      for(let i=0;i<9;i++)ctx.fillRect(((i*73)%26)+2,((i*59)%26)+2,5,4);
-      break;
-    case B.GRAVEL:
-      for(let i=0;i<14;i++){
-        ctx.fillStyle=i%2?'rgba(80,90,90,.5)':'rgba(155,165,165,.4)';
-        ctx.beginPath();ctx.arc((i*67)%SZ+2,(i*51)%SZ+2,3+i%2,0,Math.PI*2);ctx.fill();
-      }
-      break;
+  // Update UI to show tuned frequency
+  document.querySelectorAll('.freq-item').forEach(i => i.classList.remove('tuned'));
+  el.classList.add('tuned');
+
+  const lcdFreq = document.getElementById('lcdFreq');
+  const lcdChan = document.getElementById('lcdChan');
+  lcdFreq.textContent = freq;
+  lcdFreq.classList.remove('off');
+  lcdChan.textContent = '— ' + chanName + ' —';
+
+  if (chanName === 'UNICOM') {
+    lcdFreq.className = 'lcd-freq unicom';
+    lcdChan.className = 'lcd-chan unicom';
+  } else {
+    lcdFreq.className = 'lcd-freq';
+    lcdChan.className = 'lcd-chan';
   }
 
-  const t=new THREE.CanvasTexture(cv);
-  t.magFilter=THREE.NearestFilter;
-  t.minFilter=THREE.NearestFilter;
-  t.needsUpdate=true;
-  TEX_CACHE[bid]=t;
-  return t;
-}
+  currentChan = { name: chanName, freq };
 
-// ════════════════════════════════════════════════════════
-//  MATERIALS  — 6 per block (one per face direction)
-//  shade: top=bright, bottom=dark, sides=medium
-// ════════════════════════════════════════════════════════
-const SHADES=[1.0,0.45,0.75,0.75,0.85,0.85]; // +Y -Y +X -X +Z -Z
-const MAT_CACHE={};
-function getMat(bid,dir){
-  const key=bid*6+dir;
-  if(MAT_CACHE[key]) return MAT_CACHE[key];
-  const d=BD[bid]; if(!d) return null;
-  const s=SHADES[dir];
-  const m=new THREE.MeshBasicMaterial({
-    map:makeTex(bid),
-    color:new THREE.Color(s,s,s),
-    transparent:!!(d.alpha),
-    opacity:d.op??1,
-    side:THREE.FrontSide,
-    alphaTest:d.alpha?0.05:0,
-    depthWrite:d.op===0.72?false:true,
+  const fk = freqKey(freq);
+
+  // Join session
+  const memRef = db.ref(`sessions/${fk}/members/${uid}`);
+  await memRef.set({ name: callsign, type: 'user', ts: Date.now() });
+  memRef.onDisconnect().remove();
+  activeRefs.push(memRef);
+
+  // Clear old signaling
+  await db.ref(`signaling/${fk}/${uid}`).remove();
+
+  // Listen for signaling
+  const sigRef = db.ref(`signaling/${fk}/${uid}`);
+  sigRef.on('child_added', async snap => {
+    const fromId = snap.key;
+    const data = snap.val();
+    if (!data) return;
+    if (data.offer && !peers[fromId]) await handleOffer(fromId, data.offer, fk);
+    if (data.answer && peers[fromId]) await handleAnswer(fromId, data.answer);
   });
-  MAT_CACHE[key]=m;
-  return m;
-}
+  activeRefs.push(sigRef);
 
-// ════════════════════════════════════════════════════════
-//  WORLD
-// ════════════════════════════════════════════════════════
-class World{
-  constructor(scene){
-    this.scene=scene;
-    this.noise=new Noise(Math.random()*99999|0);
-    this.data=new Map();   // "x,y,z"->bid
-    this.cgen=new Set();   // generated chunk keys
-    this.cmesh=new Map();  // ck->mesh[]
-  }
-  _k(x,y,z){return x+','+y+','+z;}
-  _ck(cx,cz){return cx+','+cz;}
-  get(x,y,z){return this.data.get(this._k(x,y,z))||0;}
-  _set(x,y,z,v){if(v)this.data.set(this._k(x,y,z),v);else this.data.delete(this._k(x,y,z));}
-
-  genChunk(cx,cz){
-    const ck=this._ck(cx,cz);if(this.cgen.has(ck))return;
-    this.cgen.add(ck);
-    const n=this.noise;
-    for(let lx=0;lx<CS;lx++){
-      for(let lz=0;lz<CS;lz++){
-        const wx=cx*CS+lx,wz=cz*CS+lz;
-        const bio=n.oct(wx*.004,wz*.004,3);
-        const isMt=bio>.45,isDes=bio<-.35,isSn=bio>.65;
-        let hv=n.oct(wx*.012,wz*.012,6);
-        if(isMt)hv=hv*1.6+.25;
-        const top=Math.max(2,Math.floor(SEA+hv*26));
-
-        for(let y=0;y<CH;y++){
-          let bid=0;
-          if(y===0){bid=B.BEDROCK;}
-          else if(y<top-4){
-            const ov=n.n(wx*.6+y*17.3,wz*.6+y*11.7);
-            if(y<18&&ov>.68)bid=B.DIAMOND;
-            else if(y<32&&ov>.60)bid=B.GOLD;
-            else if(y<50&&ov>.54)bid=B.IRON;
-            else if(ov>.50)bid=B.COAL;
-            else bid=B.STONE;
-          }else if(y<top-1){bid=isDes?B.SAND:B.DIRT;}
-          else if(y<top){
-            if(isDes)bid=B.SAND;
-            else if(isSn)bid=B.SNOW;
-            else bid=B.GRASS;
-          }else if(y<SEA){bid=B.WATER;}
-          if(bid)this._set(wx,y,wz,bid);
-        }
-
-        // Trees
-        if(!isDes&&!isSn&&top>SEA){
-          const tv=n.n(wx*.35+50,wz*.35+50);
-          if(tv>.72){
-            const th=4+(Math.abs(n.n(wx*2,wz*2))*3|0);
-            for(let i=0;i<th;i++)this._set(wx,top+i,wz,B.WOOD);
-            for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++)for(let dy=0;dy<3;dy++){
-              if(Math.abs(dx)===2&&Math.abs(dz)===2)continue;
-              if(dy===2&&(Math.abs(dx)>1||Math.abs(dz)>1))continue;
-              if(!this.get(wx+dx,top+th-2+dy,wz+dz))this._set(wx+dx,top+th-2+dy,wz+dz,B.LEAVES);
-            }
-            this._set(wx,top+th,wz,B.LEAVES);
-          }
-        }
-      }
-    }
-  }
-
-  // ── Build chunk mesh (face-by-face, grouped by [blockType][dirIndex]) ──
-  buildMesh(cx,cz){
-    const ck=this._ck(cx,cz);if(this.cmesh.has(ck))return;
-
-    //        dx  dy  dz    face verts (CCW from outside)
-    const DIRS=[
-      [0,1,0,  [[0,1,1],[1,1,1],[1,1,0],[0,1,0]]],  // 0 top    +Y
-      [0,-1,0, [[0,0,0],[1,0,0],[1,0,1],[0,0,1]]],  // 1 bottom -Y
-      [1,0,0,  [[1,0,0],[1,1,0],[1,1,1],[1,0,1]]],  // 2 right  +X
-      [-1,0,0, [[0,0,1],[0,1,1],[0,1,0],[0,0,0]]],  // 3 left   -X
-      [0,0,1,  [[1,0,1],[0,0,1],[0,1,1],[1,1,1]]],  // 4 front  +Z
-      [0,0,-1, [[0,0,0],[1,0,0],[1,1,0],[0,1,0]]],  // 5 back   -Z
-    ];
-    const UV=[[0,1],[1,1],[1,0],[0,0]];
-    const IDX=[0,1,2,0,2,3];
-
-    // faces[bid][dir] = {pos,uv,idx,n}
-    const faces={};
-
-    for(let lx=0;lx<CS;lx++){
-      for(let lz=0;lz<CS;lz++){
-        const wx=cx*CS+lx,wz=cz*CS+lz;
-        for(let y=0;y<CH;y++){
-          const bid=this.get(wx,y,wz);
-          if(!bid)continue;
-          const da=BD[bid]||{};
-
-          for(let di=0;di<6;di++){
-            const [dx,dy,dz,verts]=DIRS[di];
-            const nb=this.get(wx+dx,y+dy,wz+dz);
-            const nbd=BD[nb];
-            // Show face when neighbor is: air(0), water(if we're not water), or alpha block
-            const show = !nb
-              || (nb!==bid && nbd && nbd.alpha)
-              || (nb===B.WATER && !da.alpha);
-            if(!show)continue;
-
-            if(!faces[bid])faces[bid]={};
-            if(!faces[bid][di])faces[bid][di]={pos:[],uv:[],idx:[],n:0};
-            const f=faces[bid][di];
-
-            for(let v=0;v<4;v++){
-              const vv=verts[v];
-              f.pos.push(wx+vv[0],y+vv[1],wz+vv[2]);
-              f.uv.push(UV[v][0],UV[v][1]);
-            }
-            for(const ii of IDX)f.idx.push(f.n+ii);
-            f.n+=4;
-          }
-        }
-      }
-    }
-
-    const meshList=[];
-    for(const bid of Object.keys(faces)){
-      const bidN=parseInt(bid);
-      for(const di of Object.keys(faces[bid])){
-        const diN=parseInt(di);
-        const f=faces[bid][di];
-        if(!f.pos.length)continue;
-        const mat=getMat(bidN,diN);
-        if(!mat)continue;
-        const geo=new THREE.BufferGeometry();
-        geo.setAttribute('position',new THREE.Float32BufferAttribute(f.pos,3));
-        geo.setAttribute('uv',new THREE.Float32BufferAttribute(f.uv,2));
-        geo.setIndex(f.idx);
-        const mesh=new THREE.Mesh(geo,mat);
-        this.scene.add(mesh);
-        meshList.push(mesh);
-      }
-    }
-    this.cmesh.set(ck,meshList);
-  }
-
-  _dropChunk(cx,cz){
-    const ck=this._ck(cx,cz);
-    if(this.cmesh.has(ck)){
-      for(const m of this.cmesh.get(ck)){this.scene.remove(m);m.geometry.dispose();}
-      this.cmesh.delete(ck);
-    }
-    this.cgen.delete(ck);
-    for(let lx=0;lx<CS;lx++)for(let lz=0;lz<CS;lz++)for(let y=0;y<CH;y++)this.data.delete(this._k(cx*CS+lx,y,cz*CS+lz));
-  }
-
-  _rebuildChunk(cx,cz){
-    const ck=this._ck(cx,cz);
-    if(this.cmesh.has(ck)){for(const m of this.cmesh.get(ck)){this.scene.remove(m);m.geometry.dispose();}this.cmesh.delete(ck);}
-    this.buildMesh(cx,cz);
-  }
-
-  setBlock(x,y,z,v){
-    this._set(x,y,z,v);
-    const cx=Math.floor(x/CS),cz=Math.floor(z/CS);
-    this._rebuildChunk(cx,cz);
-    const lx=((x%CS)+CS)%CS,lz=((z%CS)+CS)%CS;
-    if(lx===0)this._rebuildChunk(cx-1,cz);
-    if(lx===CS-1)this._rebuildChunk(cx+1,cz);
-    if(lz===0)this._rebuildChunk(cx,cz-1);
-    if(lz===CS-1)this._rebuildChunk(cx,cz+1);
-  }
-
-  update(px,pz){
-    const cx0=Math.floor(px/CS),cz0=Math.floor(pz/CS);
-    for(let dx=-RD;dx<=RD;dx++){
-      for(let dz=-RD;dz<=RD;dz++){
-        if(dx*dx+dz*dz>RD*RD)continue;
-        const cx=cx0+dx,cz=cz0+dz,ck=this._ck(cx,cz);
-        if(!this.cgen.has(ck)){this.genChunk(cx,cz);this.buildMesh(cx,cz);return;}
-      }
-    }
-    for(const ck of[...this.cmesh.keys()]){
-      const[cx,cz]=ck.split(',').map(Number);
-      if(Math.abs(cx-cx0)>RD+2||Math.abs(cz-cz0)>RD+2)this._dropChunk(cx,cz);
-    }
-  }
-}
-
-// ════════════════════════════════════════════════════════
-//  PLAYER
-// ════════════════════════════════════════════════════════
-class Player{
-  constructor(cam,world){
-    this.cam=cam;this.world=world;
-    this.pos=new THREE.Vector3(8,70,8);
-    this.vel=new THREE.Vector3();
-    this.yaw=0;this.pitch=0;
-    this.onGround=false;this.flying=false;
-    this.keys={};this.sel=0;
-    this.W=0.3;this.H=1.8;
-
-    document.addEventListener('keydown',e=>{
-      this.keys[e.code]=true;
-      if(e.code==='KeyF'){this.flying=!this.flying;this.vel.y=0;}
-      for(let i=0;i<9;i++)if(e.code===`Digit${i+1}`){this.sel=i;updateHB(i);}
-    });
-    document.addEventListener('keyup',e=>{this.keys[e.code]=false;});
-    document.addEventListener('mousemove',e=>{
-      if(!document.pointerLockElement)return;
-      this.yaw-=e.movementX*.002;
-      this.pitch=Math.max(-1.55,Math.min(1.55,this.pitch-e.movementY*.002));
-    });
-    document.addEventListener('wheel',e=>{
-      this.sel=(this.sel+(e.deltaY>0?1:-1)+HOTBAR.length)%HOTBAR.length;
-      updateHB(this.sel);
-    },{passive:true});
-  }
-
-  _solid(x,y,z){
-    const b=this.world.get(Math.floor(x),Math.floor(y),Math.floor(z));
-    return b&&b!==B.AIR&&b!==B.WATER&&b!==B.LEAVES&&b!==B.GLASS;
-  }
-  _col(px,py,pz){
-    const w=this.W;
-    for(const dx of[-w,w])for(const dz of[-w,w])for(let dy=0;dy<this.H;dy+=.35)
-      if(this._solid(px+dx,py+dy,pz+dz))return true;
-    return false;
-  }
-
-  update(dt){
-    const sp=this.keys['ShiftLeft']||this.keys['ShiftRight'];
-    const spd=sp?9:5;
-    const fw=new THREE.Vector3(Math.sin(this.yaw),0,Math.cos(this.yaw));
-    const rt=new THREE.Vector3(Math.cos(this.yaw),0,-Math.sin(this.yaw));
-    const mv=new THREE.Vector3();
-    if(this.keys['KeyW']||this.keys['KeyZ']||this.keys['ArrowUp'])mv.add(fw);
-    if(this.keys['KeyS']||this.keys['ArrowDown'])mv.sub(fw);
-    if(this.keys['KeyA']||this.keys['ArrowLeft'])mv.sub(rt);
-    if(this.keys['KeyD']||this.keys['KeyQ']||this.keys['ArrowRight'])mv.add(rt);
-    if(mv.length()>0)mv.normalize().multiplyScalar(spd);
-
-    if(this.flying){
-      this.vel.set(mv.x,0,mv.z);
-      if(this.keys['Space'])this.vel.y=spd;
-      else if(this.keys['ControlLeft']||this.keys['ControlRight'])this.vel.y=-spd;
-      else this.vel.y*=.8;
-    }else{
-      this.vel.x=mv.x;this.vel.z=mv.z;
-      this.vel.y+=-24*dt;
-      if(this.keys['Space']&&this.onGround){this.vel.y=9;this.onGround=false;}
-    }
-
-    const ox=this.pos.x,oy=this.pos.y,oz=this.pos.z;
-    this.pos.x+=this.vel.x*dt;
-    if(this._col(this.pos.x,this.pos.y,this.pos.z)){this.pos.x=ox;this.vel.x=0;}
-    this.pos.z+=this.vel.z*dt;
-    if(this._col(this.pos.x,this.pos.y,this.pos.z)){this.pos.z=oz;this.vel.z=0;}
-    this.pos.y+=this.vel.y*dt;
-    if(this._col(this.pos.x,this.pos.y,this.pos.z)){
-      if(this.vel.y<0)this.onGround=true;
-      this.pos.y=oy;this.vel.y=0;
-    }else{this.onGround=false;}
-    if(this.pos.y<0){this.pos.y=0;this.vel.y=0;}
-
-    this.cam.position.set(this.pos.x,this.pos.y+this.H*.85,this.pos.z);
-    this.cam.rotation.order='YXZ';
-    this.cam.rotation.y=this.yaw;
-    this.cam.rotation.x=this.pitch;
-  }
-}
-
-// ════════════════════════════════════════════════════════
-//  RAYCAST
-// ════════════════════════════════════════════════════════
-function raycast(world,cam){
-  const dir=new THREE.Vector3();cam.getWorldDirection(dir);
-  const o=cam.position.clone();
-  let prev=null;
-  for(let t=.1;t<6;t+=.04){
-    const p=o.clone().addScaledVector(dir,t);
-    const bx=Math.floor(p.x),by=Math.floor(p.y),bz=Math.floor(p.z);
-    const b=world.get(bx,by,bz);
-    if(b&&b!==B.AIR&&b!==B.WATER)return{hit:true,bx,by,bz,prev};
-    prev={bx,by,bz};
-  }
-  return{hit:false};
-}
-
-// ════════════════════════════════════════════════════════
-//  HUD
-// ════════════════════════════════════════════════════════
-function buildHB(){
-  const hb=document.getElementById('hotbar');hb.innerHTML='';
-  HOTBAR.forEach((id,i)=>{
-    const s=document.createElement('div');s.className='slot';s.id='hs'+i;
-    s.innerHTML=`<em>${i+1}</em>${EMO[id]||'🧱'}`;
-    hb.appendChild(s);
+  // Listen for members
+  const allMemRef = db.ref(`sessions/${fk}/members`);
+  allMemRef.on('child_added', async snap => {
+    const pid = snap.key;
+    if (pid === uid) return;
+    if (peers[pid]) return;
+    if (uid > pid) await initiateConn(pid, fk);
   });
-  updateHB(0);
-}
-function updateHB(sel){
-  HOTBAR.forEach((_,i)=>document.getElementById('hs'+i)?.classList.toggle('sel',i===sel));
-  document.getElementById('bname').textContent=BD[HOTBAR[sel]]?.name||'';
-}
+  allMemRef.on('child_removed', snap => { killPeer(snap.key); });
+  activeRefs.push(allMemRef);
 
-// ════════════════════════════════════════════════════════
-//  GAME
-// ════════════════════════════════════════════════════════
-class Game{
-  constructor(){
-    const cv=document.getElementById('c');
-    this.ren=new THREE.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-    this.ren.setPixelRatio(Math.min(devicePixelRatio,2));
-    this.ren.setSize(innerWidth,innerHeight);
+  // Listen for TX state
+  const txRef = db.ref(`sessions/${fk}/transmitting`);
+  txRef.on('value', snap => handleTX(snap.val()));
+  activeRefs.push(txRef);
 
-    this.scene=new THREE.Scene();
-    this.scene.background=new THREE.Color(0x87ceeb);
-    this.scene.fog=new THREE.Fog(0x87ceeb,50,RD*CS*1.5);
-
-    this.cam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.05,350);
-    this.scene.add(new THREE.AmbientLight(0xffffff,1));
-
-    this.world=new World(this.scene);
-    this.player=new Player(this.cam,this.world);
-
-    // Highlight wireframe
-    this.hl=new THREE.Mesh(
-      new THREE.BoxGeometry(1.008,1.008,1.008),
-      new THREE.MeshBasicMaterial({color:0x000000,wireframe:true,transparent:true,opacity:.5})
-    );
-    this.hl.visible=false;this.scene.add(this.hl);
-
-    this.running=false;this.locked=false;this.t0=0;this.fps=60;this.fc=0;
-
-    addEventListener('resize',()=>{
-      this.cam.aspect=innerWidth/innerHeight;
-      this.cam.updateProjectionMatrix();
-      this.ren.setSize(innerWidth,innerHeight);
-    });
-    document.addEventListener('pointerlockchange',()=>{
-      this.locked=!!document.pointerLockElement;
-      if(!this.locked)document.getElementById('menu').style.display='flex';
-    });
-    cv.addEventListener('mousedown',e=>{
-      if(!this.locked)return;
-      const rc=raycast(this.world,this.cam);
-      if(e.button===0&&rc.hit)this.world.setBlock(rc.bx,rc.by,rc.bz,0);
-      if(e.button===2&&rc.hit&&rc.prev){
-        const bid=HOTBAR[this.player.sel];
-        const p=this.player.pos;
-        const fx=Math.floor(p.x),fz=Math.floor(p.z),fy=Math.floor(p.y);
-        if(rc.prev.bx===fx&&rc.prev.bz===fz&&(rc.prev.by===fy||rc.prev.by===fy+1))return;
-        this.world.setBlock(rc.prev.bx,rc.prev.by,rc.prev.bz,bid);
-      }
-    });
-    cv.addEventListener('contextmenu',e=>e.preventDefault());
-    buildHB();
-  }
-
-  start(){
-    document.getElementById('menu').style.display='none';
-    // Pre-generate spawn area
-    for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){
-      if(dx*dx+dz*dz<=RD*RD)this.world.genChunk(dx,dz);
-    }
-    // Spawn height
-    for(let y=CH-1;y>0;y--){
-      if(this.world.get(8,y,8)){this.player.pos.y=y+2;break;}
-    }
-    for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){
-      if(dx*dx+dz*dz<=RD*RD)this.world.buildMesh(dx,dz);
-    }
-    this.running=true;this.t0=performance.now();
-    document.getElementById('c').requestPointerLock();
-    requestAnimationFrame(ts=>this.loop(ts));
-  }
-
-  loop(ts){
-    if(!this.running)return;
-    requestAnimationFrame(t=>this.loop(t));
-    const dt=Math.min((ts-this.t0)/1000,.1);this.t0=ts;
-    if(++this.fc%20===0)this.fps=Math.round(1/dt);
-    if(this.locked)this.player.update(dt);
-    this.world.update(this.player.pos.x,this.player.pos.z);
-    const rc=raycast(this.world,this.cam);
-    if(rc.hit){this.hl.visible=true;this.hl.position.set(rc.bx+.5,rc.by+.5,rc.bz+.5);}
-    else this.hl.visible=false;
-    const p=this.player.pos;
-    document.getElementById('dbg').innerHTML=
-      `FPS: ${this.fps}<br>XYZ: ${p.x.toFixed(1)} / ${p.y.toFixed(1)} / ${p.z.toFixed(1)}<br>`+
-      `Chunk: ${Math.floor(p.x/CS)},${Math.floor(p.z/CS)}<br>`+
-      `Vol: ${this.player.flying?'✈ oui':'non'} | Sol: ${this.player.onGround?'oui':'non'}<br>`+
-      `Chunks: ${this.world.cmesh.size}`;
-    this.ren.render(this.scene,this.cam);
-  }
+  document.getElementById('pttBtn').disabled = false;
+  document.getElementById('pttBtn').querySelector || (document.getElementById('pttBtn').textContent = 'PTT — APPUYER POUR ÉMETTRE');
+  document.getElementById('sConn').textContent = callsign + ' @ ' + freq + ' (' + chanName + ')';
+  document.getElementById('sdConn').classList.add('ok');
 }
 
-const G=new Game();
-document.getElementById('playbtn').addEventListener('click',()=>G.start());
-document.getElementById('menu').addEventListener('click',e=>{
-  if(e.target===document.getElementById('menu')&&G.running){
-    document.getElementById('menu').style.display='none';
-    document.getElementById('c').requestPointerLock();
+async function leaveChannel() {
+  if (!currentChan) return;
+  stopPTT();
+
+  const fk = freqKey(currentChan.freq);
+  await db.ref(`sessions/${fk}/members/${uid}`).remove();
+  await db.ref(`signaling/${fk}/${uid}`).remove();
+  const txSnap = await db.ref(`sessions/${fk}/transmitting`).get();
+  if (txSnap.val()?.uid === uid) await db.ref(`sessions/${fk}/transmitting`).remove();
+
+  activeRefs.forEach(r => r.off && r.off());
+  activeRefs = [];
+
+  Object.keys(peers).forEach(id => killPeer(id));
+
+  currentChan = null;
+  document.getElementById('pttBtn').disabled = true;
+  document.getElementById('sConn').textContent = 'Déconnecté';
+  document.getElementById('sdConn').classList.remove('ok');
+  document.getElementById('ledExt').classList.remove('on');
+  document.getElementById('ledVous').classList.remove('on');
+  document.getElementById('txBanner').classList.remove('show');
+  document.getElementById('extWho').textContent = '';
+}
+
+// ══════════════════════════════════════════
+//  WebRTC
+// ══════════════════════════════════════════
+async function initiateConn(pid, fk) {
+  const pc = makePeer(pid, fk);
+  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).set({ offer: {type:offer.type, sdp:offer.sdp} });
+}
+
+async function handleOffer(pid, offer, fk) {
+  const pc = makePeer(pid, fk);
+  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  await pc.setRemoteDescription(new RTCSessionDescription(offer));
+  for (const c of (candQueues[pid]||[])) {
+    try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
   }
+  delete candQueues[pid];
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).update({ answer: {type:answer.type, sdp:answer.sdp} });
+}
+
+async function handleAnswer(pid, answer) {
+  const pc = peers[pid];
+  if (!pc || pc.signalingState !== 'have-local-offer') return;
+  await pc.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+function makePeer(pid, fk) {
+  const pc = new RTCPeerConnection(STUN);
+  peers[pid] = pc;
+
+  pc.onicecandidate = e => {
+    if (e.candidate) db.ref(`signaling/${fk}/${pid}/${uid}/candidates`).push(e.candidate.toJSON());
+  };
+
+  pc.ontrack = e => {
+    let a = audEls[pid];
+    if (!a) {
+      a = new Audio(); audEls[pid] = a;
+      if (outDevId && a.setSinkId) a.setSinkId(outDevId).catch(()=>{});
+    }
+    if (a.srcObject !== e.streams[0]) { a.srcObject = e.streams[0]; a.play().catch(()=>{}); }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    if (['disconnected','failed','closed'].includes(pc.iceConnectionState)) killPeer(pid);
+  };
+
+  const candRef = db.ref(`signaling/${fk}/${uid}/${pid}/candidates`);
+  candRef.on('child_added', async snap => {
+    const c = snap.val();
+    if (peers[pid]?.remoteDescription) {
+      try { await peers[pid].addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+    } else {
+      if (!candQueues[pid]) candQueues[pid] = [];
+      candQueues[pid].push(c);
+    }
+  });
+  activeRefs.push(candRef);
+
+  return pc;
+}
+
+function killPeer(pid) {
+  peers[pid]?.close();
+  delete peers[pid];
+  if (audEls[pid]) { audEls[pid].pause(); audEls[pid].srcObject = null; delete audEls[pid]; }
+  delete candQueues[pid];
+}
+
+// ══════════════════════════════════════════
+//  PTT
+// ══════════════════════════════════════════
+function startPTT() {
+  if (!currentChan || pttLocked || pttActive) return;
+  pttActive = true;
+  localStream?.getAudioTracks().forEach(t => t.enabled = true);
+  document.getElementById('pttBtn').classList.add('tx');
+  document.getElementById('ledVous').classList.add('on');
+  const fk = freqKey(currentChan.freq);
+  callsign = document.getElementById('callsignInput').value.trim() || callsign;
+  db.ref(`sessions/${fk}/transmitting`).set({ uid, name: callsign, ts: Date.now() });
+}
+
+function stopPTT() {
+  if (!pttActive) return;
+  pttActive = false;
+  localStream?.getAudioTracks().forEach(t => t.enabled = false);
+  document.getElementById('pttBtn').classList.remove('tx');
+  document.getElementById('ledVous').classList.remove('on');
+  if (currentChan) {
+    const fk = freqKey(currentChan.freq);
+    db.ref(`sessions/${fk}/transmitting`).get().then(snap => {
+      if (snap.val()?.uid === uid) db.ref(`sessions/${fk}/transmitting`).remove();
+    });
+  }
+}
+
+function handleTX(data) {
+  const lExt = document.getElementById('ledExt');
+  const lVous = document.getElementById('ledVous');
+  const ptt = document.getElementById('pttBtn');
+  const banner = document.getElementById('txBanner');
+  const who = document.getElementById('extWho');
+
+  if (data && data.uid !== uid) {
+    lExt.classList.add('on');
+    who.textContent = data.name || '?';
+    pttLocked = true;
+    ptt.classList.add('locked');
+    banner.textContent = '● ' + (data.name||'?') + ' EN ÉMISSION';
+    banner.classList.add('show');
+    if (pttActive) stopPTT();
+  } else if (data && data.uid === uid) {
+    lVous.classList.add('on');
+    lExt.classList.remove('on');
+    who.textContent = '';
+    banner.classList.remove('show');
+  } else {
+    lExt.classList.remove('on');
+    lVous.classList.remove('on');
+    who.textContent = '';
+    pttLocked = false;
+    ptt.classList.remove('locked');
+    banner.classList.remove('show');
+  }
+}
+
+// ══════════════════════════════════════════
+//  CONTROLLER POSITIONS → FREQ LIST
+// ══════════════════════════════════════════
+const CTRL_DEFS = [
+  {pos:'CTY', freq:'118.800', label:'City · Contrôleur Ville'},
+  {pos:'WLD', freq:'123.500', label:'World · Contrôleur Monde'},
+  {pos:'ARL', freq:'124.615', label:'Aerial · Contrôleur Aérien'},
+];
+
+let ctrlsData = {};
+
+function buildFreqList(data) {
+  ctrlsData = data || {};
+  const list = document.getElementById('ctrlFreqList');
+  list.innerHTML = CTRL_DEFS.map(def => {
+    const c = ctrlsData[def.pos];
+    const on = !!c;
+    const tuned = currentChan?.freq === def.freq;
+    const offline = on ? '' : 'freq-offline';
+    return `<div class="freq-item ${tuned?'tuned':''} ${offline}" id="item-${def.pos}"
+      onclick="${on ? `tuneFreq('${def.pos}','${def.freq}',this)` : 'showOfflineToast()'}">
+      <div class="fi-dot ${on?'on':''}"></div>
+      <div class="fi-info">
+        <div class="fi-chan">${on ? c.callsign : def.pos}</div>
+        <div class="fi-detail">${def.label} · ${on?'En ligne':'Hors ligne'}</div>
+      </div>
+      <div class="fi-badge">${def.freq}</div>
+    </div>`;
+  }).join('');
+}
+
+function showOfflineToast() {
+  // small feedback
+  const btn = document.getElementById('pttBtn');
+  const orig = btn.textContent;
+  btn.textContent = 'POSITION HORS LIGNE';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+function freqKey(f) { return f.replace('.','_'); }
+
+// ══════════════════════════════════════════
+//  KEYBOARD PTT
+// ══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !e.repeat && currentChan) { e.preventDefault(); startPTT(); }
 });
+document.addEventListener('keyup', e => {
+  if (e.code === 'Space') { e.preventDefault(); stopPTT(); }
+});
+
+// ══════════════════════════════════════════
+//  UNLOAD
+// ══════════════════════════════════════════
+window.addEventListener('beforeunload', () => {
+  if (!currentChan) return;
+  const fk = freqKey(currentChan.freq);
+  db.ref(`sessions/${fk}/members/${uid}`).remove();
+  db.ref(`signaling/${fk}/${uid}`).remove();
+});
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+loadDevices();
+
+// Listen for controllers → update freq list
+db.ref('controllers').on('value', snap => buildFreqList(snap.val()));
+
+// Default: tune UNICOM on load (after devices ready)
+setTimeout(() => {
+  // Pre-select UNICOM display (without joining yet – user clicks to actually join)
+}, 500);
 </script>
 </body>
 </html>
