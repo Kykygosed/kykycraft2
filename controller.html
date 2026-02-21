@@ -13,6 +13,7 @@
   --green:#00e647;--green-lo:#002d10;--green-dim:#006622;
   --red:#ff3333;--red-lo:#2d0808;
   --blue:#4488ff;
+  --cyan:#00c8ff;--cyan-lo:#002d3a;
   --txt:#b8bec8;--txt-lo:#4a5060;--txt-mid:#7a8290;
   --lcd:#080f08;
 }
@@ -69,7 +70,7 @@ select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;lett
 .users-panel{flex:1;overflow:hidden;}
 .usr-scroll{overflow-y:auto;height:100%;}
 .usr-row{padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);
-  cursor:context-menu;transition:background .12s;user-select:none;}
+  cursor:pointer;transition:background .12s;user-select:none;}
 .usr-row:hover{background:var(--panel-c);}
 .usr-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
 .usr-name{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt);}
@@ -162,21 +163,52 @@ select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;lett
 
 /* ── CONTEXT MENU ── */
 .ctx-menu{position:fixed;background:#111318;border:1px solid var(--border-hi);border-radius:5px;
-  z-index:10000;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.85);overflow:hidden;
+  z-index:10000;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.85);overflow:visible;
   font-family:'Rajdhani',sans-serif;display:none;}
 .ctx-hdr{padding:6px 12px;font-size:9px;letter-spacing:2px;color:var(--amber);
-  text-transform:uppercase;border-bottom:1px solid var(--border);background:#0d0f12;font-weight:700;}
+  text-transform:uppercase;border-bottom:1px solid var(--border);background:#0d0f12;
+  font-weight:700;border-radius:5px 5px 0 0;}
 .ctx-item{padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px;transition:background .1s;}
 .ctx-item:hover{background:var(--panel-c);}
 .ctx-item.danger{color:var(--red);}
 .ctx-item.xfer{color:var(--green);}
 .ctx-ico{font-size:11px;width:14px;text-align:center;}
+.ctx-ico-arrow{font-size:10px;margin-left:auto;color:var(--txt-lo);}
 .ctx-sep{height:1px;background:var(--border);margin:3px 0;}
-.ctx-sub{display:none;border-top:1px solid var(--border);}
-.ctx-sub.open{display:block;}
-.ctx-sub-item{padding:8px 14px 8px 28px;cursor:pointer;font-size:12px;color:var(--green);transition:background .1s;}
+/* Hover submenu */
+.xfer-wrap{position:relative;}
+.xfer-wrap .ctx-sub{
+  display:none;position:absolute;left:100%;top:-1px;
+  background:#111318;border:1px solid var(--border-hi);border-radius:5px;
+  min-width:210px;box-shadow:8px 8px 32px rgba(0,0,0,.85);overflow:hidden;
+}
+.xfer-wrap:hover .ctx-sub{display:block;}
+.ctx-sub-item{padding:9px 14px;cursor:pointer;font-size:13px;color:var(--green);
+  transition:background .1s;display:flex;align-items:center;gap:8px;}
 .ctx-sub-item:hover{background:var(--panel-c);}
 .ctx-sub-item.off{color:var(--txt-lo);cursor:default;pointer-events:none;}
+.ctx-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);flex-shrink:0;}
+.ctx-sub-info{flex:1;}
+.ctx-sub-call{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;}
+.ctx-sub-freq{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--amber);}
+
+/* ── GLOBAL USERS ── */
+.glob-panel{flex-shrink:0;max-height:220px;}
+.glob-scroll{overflow-y:auto;flex:1;}
+.glob-scroll::-webkit-scrollbar{width:4px;}
+.glob-scroll::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px;}
+.glob-row{padding:7px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .12s;user-select:none;}
+.glob-row:hover{background:var(--panel-c);}
+.glob-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);flex-shrink:0;}
+.glob-info{flex:1;min-width:0;}
+.glob-name{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.glob-freq{font-size:9px;color:var(--txt-lo);margin-top:1px;font-family:'Share Tech Mono',monospace;}
+.glob-badge{font-family:'Orbitron',monospace;font-size:8px;padding:2px 5px;border-radius:2px;
+  background:var(--green-lo);color:var(--green);border:1px solid var(--green-dim);flex-shrink:0;}
+.glob-badge.unicom{background:var(--cyan-lo,#002d3a);color:#00c8ff;border-color:#005566;}
+.no-glob{padding:16px;text-align:center;color:var(--txt-lo);font-size:10px;letter-spacing:2px;}
+.glob-count{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txt-lo);}
 
 .statusbar{background:#06070a;border-top:1px solid var(--border);padding:4px 16px;display:flex;gap:16px;flex-shrink:0;}
 .si{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--txt-lo);letter-spacing:1px;}
@@ -254,6 +286,13 @@ select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;lett
           <div class="pos-card"><div class="pos-dot2" id="dot-ARL"></div><div class="pos-card-info"><div class="pos-card-call" id="call-ARL">ARL</div><div class="pos-card-sub" id="sub-ARL">Aerial · Hors ligne</div></div><div class="pos-card-freq">124.615</div></div>
         </div>
       </div>
+      <div class="card glob-panel">
+        <div class="card-head" style="display:flex;align-items:center;">
+          Utilisateurs en ligne
+          <span class="glob-count" id="globCount">0</span>
+        </div>
+        <div class="glob-scroll" id="globList"><div class="no-glob">Aucun utilisateur en ligne</div></div>
+      </div>
       <div class="card chat-panel">
         <div class="card-head">Chat fréquence</div>
         <div class="chat-msgs" id="chatMsgs"><div class="msg sys-line"><span class="msg-text">Connectez-vous pour accéder au chat.</span></div></div>
@@ -277,8 +316,10 @@ select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;lett
   <div class="ctx-hdr" id="ctxTitle">Options</div>
   <div class="ctx-item danger" onclick="doForceACT()"><span class="ctx-ico">⚠</span>Force ACT</div>
   <div class="ctx-sep"></div>
-  <div class="ctx-item xfer" onclick="toggleSub()"><span class="ctx-ico">↗</span>Transférer vers...</div>
-  <div class="ctx-sub" id="ctxSub"></div>
+  <div class="xfer-wrap">
+    <div class="ctx-item xfer"><span class="ctx-ico">↗</span>Transférer vers...<span class="ctx-ico-arrow">▶</span></div>
+    <div class="ctx-sub" id="ctxSub"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -713,23 +754,23 @@ function handleCommand(cmd) {
   div.className = 'msg';
   const ts = fmtTime(Date.now());
   if (cmd.type === 'forceact') {
-    playSound('forceact.mp3', 1.0, true);
+    playSound('forceact.mp3', 1.0, 'alarm');
     div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-user">⚠ CONTRÔLE</span><span class="msg-text t-red">${esc(cmd.message)}</span>`;
   } else if (cmd.type === 'transfer') {
-    playSound('notification.mp3', 0.9, false);
+    playSound('notification.mp3', 0.7, 'calm');
     div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-ctrl">↗ TRANSFERT</span><span class="msg-text t-green">${esc(cmd.message)}</span>`;
   }
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
 }
 
-function playSound(file, vol, alarm) {
+function playSound(file, vol, type) {
   const a = new Audio(file);
   a.volume = vol;
   a.play().catch(() => {
     try {
       const ctx = new AudioContext();
-      if (alarm) {
+      if (type === 'alarm') {
         [0, 0.28, 0.56].forEach(t => {
           const o = ctx.createOscillator(), g = ctx.createGain();
           o.connect(g); g.connect(ctx.destination);
@@ -738,11 +779,17 @@ function playSound(file, vol, alarm) {
         });
         setTimeout(() => ctx.close(), 1500);
       } else {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = 660; g.gain.value = 0.25;
-        o.start(); o.stop(ctx.currentTime + 0.3);
-        setTimeout(() => ctx.close(), 600);
+        const now = ctx.currentTime;
+        [[523, 0], [659, 0.18]].forEach(([freq, delay]) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = 'sine'; o.frequency.value = freq;
+          g.gain.setValueAtTime(0, now + delay);
+          g.gain.linearRampToValueAtTime(0.22, now + delay + 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.6);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(now + delay); o.stop(now + delay + 0.7);
+        });
+        setTimeout(() => ctx.close(), 1200);
       }
     } catch(e) {}
   });
@@ -751,26 +798,41 @@ function playSound(file, vol, alarm) {
 /* ═══════════════════════════
    CONTEXT MENU
 ═══════════════════════════ */
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('click', closeCtx);
+document.addEventListener('click', e => {
+  const menu = document.getElementById('ctxMenu');
+  if (menu.style.display === 'block' && !menu.contains(e.target)) closeCtx();
+});
 
 function openCtx(e, pid, name) {
   ctxTargetUid  = pid;
   ctxTargetName = name;
   document.getElementById('ctxTitle').textContent = '👤 ' + name;
-  // Build transfer submenu
+
+  // Build transfer submenu using data attributes (avoids esc() breaking onclick)
   const sub = document.getElementById('ctxSub');
   sub.innerHTML = '';
   sub.classList.remove('open');
+
   const others = CTRL_DEFS.filter(d => d.pos !== selPos && onlineControllers[d.pos]);
   if (!others.length) {
-    sub.innerHTML = '<div class="ctx-sub-item off">Aucune autre position en ligne</div>';
+    const el = document.createElement('div');
+    el.className = 'ctx-sub-item off';
+    el.textContent = 'Aucune autre position en ligne';
+    sub.appendChild(el);
   } else {
     others.forEach(d => {
       const c = onlineControllers[d.pos];
-      sub.innerHTML += `<div class="ctx-sub-item" onclick="doTransfer('${d.pos}','${d.freq}','${esc(c.callsign)}')">${esc(c.callsign)} — ${d.freq}</div>`;
+      const el = document.createElement('div');
+      el.className = 'ctx-sub-item';
+      el.innerHTML = `<div class="ctx-sub-dot"></div><div class="ctx-sub-info"><div class="ctx-sub-call">${esc(c.callsign)}</div><div class="ctx-sub-freq">${d.freq} MHz</div></div>`;
+      el.dataset.pos      = d.pos;
+      el.dataset.freq     = d.freq;
+      el.dataset.callsign = c.callsign;
+      el.addEventListener('click', () => doTransfer(el.dataset.pos, el.dataset.freq, el.dataset.callsign));
+      sub.appendChild(el);
     });
   }
+
   const menu = document.getElementById('ctxMenu');
   menu.style.display = 'block';
   const x = Math.min(e.clientX, window.innerWidth  - 215);
@@ -780,21 +842,41 @@ function openCtx(e, pid, name) {
   e.stopPropagation();
 }
 function closeCtx()  { document.getElementById('ctxMenu').style.display = 'none'; }
-function toggleSub() { document.getElementById('ctxSub').classList.toggle('open'); }
 
 function doForceACT() {
   if (!ctxTargetUid) return;
-  const msg = FORCE_ACT_MSG[selPos] || 'GOOD DAY PLEASE CONTACT CONTROL';
-  db.ref(`commands/${ctxTargetUid}`).push({ type:'forceact', from:uid, fromPos:selPos, fromCallsign:callsign, message:msg, ts:Date.now() });
-  addSys('Force ACT envoyé à ' + ctxTargetName);
+  const pos = selPos || 'CTY';
+  const msg = FORCE_ACT_MSG[pos] || 'GOOD DAY PLEASE CONTACT CONTROL';
+  db.ref(`commands/${ctxTargetUid}`).push({
+    type:'forceact', from:uid, fromPos:pos, fromCallsign:callsign||uid,
+    message:msg, ts:Date.now()
+  });
+  // Show red message in OUR chat too so we see what we sent
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.innerHTML = `<span class="msg-time">${fmtTime(Date.now())}</span>`
+    + `<span class="msg-name n-user">⚠ FORCE ACT → ${esc(ctxTargetName)}</span>`
+    + `<span class="msg-text t-red">${esc(msg)}</span>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
   closeCtx();
 }
 
 function doTransfer(toPos, toFreq, toCallsign) {
   if (!ctxTargetUid) return;
-  const msg = `Hello, switch to ${toCallsign} on ${toFreq}`;
-  db.ref(`commands/${ctxTargetUid}`).push({ type:'transfer', from:uid, fromPos:selPos, fromCallsign:callsign, toPos, toFreq, toCallsign, message:msg, ts:Date.now() });
-  addSys('Transfert vers ' + toCallsign + ' envoyé à ' + ctxTargetName);
+  const msg = `Please switch to ${toFreq} (${toCallsign})`;
+  db.ref(`commands/${ctxTargetUid}`).push({
+    type:'transfer', from:uid, fromPos:selPos, fromCallsign:callsign,
+    toPos, toFreq, toCallsign, message:msg, ts:Date.now()
+  });
+  // Confirmation in our chat
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.innerHTML = `<span class="msg-time">${fmtTime(Date.now())}</span>`
+    + `<span class="msg-name n-ctrl">↗ TRANSFER → ${esc(ctxTargetName)}</span>`
+    + `<span class="msg-text t-green">${esc(msg)}</span>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
   closeCtx();
 }
 
@@ -807,11 +889,11 @@ function buildUsrList() {
   const entries = Object.entries(connectedMembers);
   if (!entries.length) { list.innerHTML = '<div class="no-users">Aucun utilisateur sur cette fréquence</div>'; return; }
   list.innerHTML = entries.map(([pid, m]) =>
-    `<div class="usr-row" oncontextmenu="openCtx(event,'${pid}','${esc(m.name||pid)}')">
+    `<div class="usr-row" onclick="openCtx(event,'${pid}','${m.name||pid}')">
       <div class="usr-dot"></div>
       <div>
         <div class="usr-name">${esc(m.name || pid)}</div>
-        <div class="usr-hint">${m.type === 'controller' ? 'Contrôleur' : 'Joueur'} · clic droit</div>
+        <div class="usr-hint">${m.type === 'controller' ? 'Contrôleur' : 'Joueur'} · cliquer</div>
       </div>
     </div>`
   ).join('');
@@ -832,6 +914,58 @@ function updateOnlinePanel(data) {
     if (call) { call.textContent = on ? c.callsign : d.pos; call.className = 'pos-card-call' + (on ? ' on' : ''); }
     if (sub)  sub.textContent = d.label + ' · ' + (on ? 'En ligne' : 'Hors ligne');
   });
+}
+
+/* ═══════════════════════════
+   GLOBAL ONLINE USERS
+═══════════════════════════ */
+// All known frequencies to watch
+const ALL_FREQS = [
+  {freq:'118.800', pos:'CTY', label:'CTY'},
+  {freq:'123.500', pos:'WLD', label:'WLD'},
+  {freq:'124.615', pos:'ARL', label:'ARL'},
+  {freq:'122.800', pos:'UNICOM', label:'UNICOM'},
+];
+let globalUsers = {}; // uid → {name, freq, pos, type}
+
+function startGlobalWatch() {
+  ALL_FREQS.forEach(f => {
+    const ref = db.ref(`sessions/${fKey(f.freq)}/members`);
+    ref.on('value', snap => {
+      // Remove old entries for this freq
+      Object.keys(globalUsers).forEach(id => {
+        if (globalUsers[id].freq === f.freq) delete globalUsers[id];
+      });
+      snap.forEach(s => {
+        if (s.key !== uid) { // exclude ourselves
+          globalUsers[s.key] = { ...s.val(), freq: f.freq, pos: f.pos };
+        }
+      });
+      buildGlobList();
+    });
+  });
+}
+
+function buildGlobList() {
+  const list  = document.getElementById('globList');
+  const count = document.getElementById('globCount');
+  const entries = Object.entries(globalUsers);
+  count.textContent = entries.length;
+  if (!entries.length) {
+    list.innerHTML = '<div class="no-glob">Aucun utilisateur en ligne</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([pid, m]) => {
+    const isUnicom = m.pos === 'UNICOM';
+    return `<div class="glob-row" onclick="openCtx(event,'${pid}','${m.name||pid}')">
+      <div class="glob-dot"></div>
+      <div class="glob-info">
+        <div class="glob-name">${esc(m.name || pid)}</div>
+        <div class="glob-freq">${m.freq} MHz</div>
+      </div>
+      <div class="glob-badge${isUnicom?' unicom':''}">${m.pos}</div>
+    </div>`;
+  }).join('');
 }
 
 /* ═══════════════════════════
@@ -885,6 +1019,7 @@ window.addEventListener('beforeunload', () => {
    INIT
 ═══════════════════════════ */
 loadDevices();
+startGlobalWatch();
 db.ref('controllers').on('value', snap => updateOnlinePanel(snap.val()));
 </script>
 </body>
