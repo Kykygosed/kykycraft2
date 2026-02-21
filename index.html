@@ -3,281 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KYKY RADIO — Utilisateur</title>
+<title>KYKY RADIO — Station Joueur</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #07080a;
-  --panel: #0f1113;
-  --panel-b: #13161a;
-  --panel-c: #1a1e24;
-  --border: #232830;
-  --border-hi: #363d48;
-  --amber: #ffaa00;
-  --amber-lo: #3d2800;
-  --amber-mid: #8a5a00;
-  --green: #00e647;
-  --green-lo: #002d10;
-  --red: #ff3333;
-  --red-lo: #2d0808;
-  --txt: #b8bec8;
-  --txt-lo: #4a5060;
-  --txt-mid: #7a8290;
-  --lcd: #080f08;
-  --unicom: #00c8ff;
-  --unicom-lo: #002d3a;
+:root{
+  --bg:#07080a;--panel:#0f1113;--panel-b:#13161a;--panel-c:#1a1e24;
+  --border:#232830;--border-hi:#363d48;
+  --amber:#ffaa00;--amber-lo:#3d2800;--amber-mid:#8a5a00;
+  --green:#00e647;--green-lo:#002d10;--green-dim:#006622;
+  --red:#ff3333;--red-lo:#2d0808;
+  --blue:#4488ff;
+  --cyan:#00c8ff;--cyan-lo:#002d3a;
+  --txt:#b8bec8;--txt-lo:#4a5060;--txt-mid:#7a8290;
+  --lcd:#080f08;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
-}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
 .layout{display:flex;flex-direction:column;height:100%;}
 
-/* TOPBAR */
-.topbar{
-  background:#090b0d;border-bottom:1px solid var(--border);
-  padding:0 20px;height:44px;display:flex;align-items:center;gap:16px;flex-shrink:0;
-}
-.logo{font-family:'Orbitron',monospace;font-size:15px;color:var(--amber);letter-spacing:4px;font-weight:700;}
-.sep{width:1px;height:20px;background:var(--border);}
-.topbar-sub{font-size:11px;color:var(--txt-lo);letter-spacing:3px;text-transform:uppercase;}
+.topbar{background:#090b0d;border-bottom:1px solid var(--border);padding:0 16px;height:42px;
+  display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.logo{font-family:'Orbitron',monospace;font-size:14px;color:var(--amber);letter-spacing:4px;font-weight:700;}
+.sep{width:1px;height:18px;background:var(--border);}
+.topbar-sub{font-size:10px;color:var(--txt-lo);letter-spacing:3px;text-transform:uppercase;}
 .topbar-right{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txt-lo);}
 
-/* MAIN */
-.main{flex:1;display:flex;gap:16px;padding:16px;overflow:auto;align-items:flex-start;justify-content:center;}
+.main{flex:1;display:flex;gap:12px;padding:12px;overflow:hidden;align-items:flex-start;}
 
-/* CARD */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
-.card-head{
-  background:#0b0d0f;border-bottom:1px solid var(--border);
-  padding:7px 14px;font-size:10px;font-weight:700;
-  letter-spacing:3px;color:var(--txt-lo);text-transform:uppercase;
-}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:5px;
+  display:flex;flex-direction:column;overflow:hidden;}
+.card-head{background:#0b0d0f;border-bottom:1px solid var(--border);padding:6px 12px;
+  font-size:10px;font-weight:700;letter-spacing:3px;color:var(--txt-lo);text-transform:uppercase;flex-shrink:0;}
 
 /* ── VHF BOX ── */
-.vhf-box{
-  width:310px;flex-shrink:0;
-  background:var(--panel-b);border:2px solid var(--border-hi);
-  border-radius:7px;
-  box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
-}
-.vhf-top{
-  background:#090b0d;border-bottom:1px solid var(--border);
-  padding:6px 12px;display:flex;justify-content:space-between;align-items:center;
-}
-.vhf-brand{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--txt-lo);}
+.vhf-box{width:310px;flex-shrink:0;background:var(--panel-b);border:2px solid var(--border-hi);border-radius:7px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);}
+.vhf-top{background:#090b0d;border-bottom:1px solid var(--border);padding:5px 10px;
+  display:flex;justify-content:space-between;align-items:center;}
+.vhf-brand{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--txt-lo);}
 
-/* LCD */
-.lcd-wrap{margin:12px;background:var(--lcd);border-radius:3px;
-  border:1px solid #0a180a;box-shadow:inset 0 2px 12px rgba(0,0,0,.7);padding:10px 14px;}
-.lcd-top{display:flex;align-items:baseline;gap:6px;justify-content:center;}
-.lcd-freq{
-  font-family:'Share Tech Mono',monospace;font-size:38px;
-  color:var(--amber);letter-spacing:3px;
-  text-shadow:0 0 24px rgba(255,170,0,.5),0 0 48px rgba(255,170,0,.2);
-  transition:all .25s;
-}
-.lcd-freq.unicom{color:var(--unicom);text-shadow:0 0 24px rgba(0,200,255,.5);}
+.lcd-wrap{margin:10px;background:var(--lcd);border-radius:3px;border:1px solid #0a180a;
+  box-shadow:inset 0 2px 12px rgba(0,0,0,.7);padding:8px 12px;}
+.lcd-top{display:flex;align-items:baseline;gap:5px;justify-content:center;}
+.lcd-freq{font-family:'Share Tech Mono',monospace;font-size:34px;color:var(--amber);letter-spacing:3px;
+  text-shadow:0 0 20px rgba(255,170,0,.5);transition:all .25s;}
 .lcd-freq.off{color:var(--amber-lo);text-shadow:none;}
-.lcd-unit{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--amber-mid);align-self:flex-end;padding-bottom:5px;}
-.lcd-chan{
-  text-align:center;font-family:'Orbitron',monospace;
-  font-size:9px;color:var(--txt-lo);letter-spacing:3px;margin-top:5px;
-  transition:all .25s;
-}
-.lcd-chan.unicom{color:var(--unicom);}
+.lcd-freq.unicom{color:var(--cyan);text-shadow:0 0 20px rgba(0,200,255,.5);}
+.lcd-unit{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--amber-mid);align-self:flex-end;padding-bottom:3px;}
+.lcd-chan{text-align:center;font-family:'Orbitron',monospace;font-size:8px;color:var(--txt-lo);letter-spacing:3px;margin-top:3px;transition:all .25s;}
+.lcd-chan.unicom{color:var(--cyan);}
 
-/* Indicators */
-.indics{display:flex;gap:8px;margin:0 12px 12px;}
-.indic{
-  flex:1;background:#0a0c0e;border:1px solid var(--border);border-radius:3px;
-  padding:8px 8px;display:flex;align-items:center;gap:8px;
-}
-.led{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:all .08s;}
+.indics{display:flex;gap:7px;margin:0 10px 10px;}
+.indic{flex:1;background:#0a0c0e;border:1px solid var(--border);border-radius:3px;
+  padding:6px 7px;display:flex;align-items:center;gap:7px;}
+.led{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background .08s,box-shadow .08s;}
 .led-r{background:var(--red-lo);}
 .led-g{background:var(--green-lo);}
-.led-r.on{background:var(--red);box-shadow:0 0 10px var(--red),0 0 20px rgba(255,51,51,.4);}
-.led-g.on{background:var(--green);box-shadow:0 0 10px var(--green),0 0 20px rgba(0,230,71,.4);}
-.led-lbl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--txt-lo);font-weight:700;}
-.led-who{font-size:9px;color:var(--txt-lo);margin-left:auto;font-family:'Share Tech Mono',monospace;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.led-r.on{background:var(--red);box-shadow:0 0 8px var(--red);}
+.led-g.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+.led-lbl{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--txt-lo);font-weight:700;}
+.led-who{font-size:8px;color:var(--txt-lo);margin-left:auto;font-family:'Share Tech Mono',monospace;
+  max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* TX Banner */
-.tx-banner{
-  display:none;margin:0 12px 10px;padding:6px 10px;
-  background:rgba(255,51,51,.08);border:1px solid rgba(255,51,51,.25);
-  border-radius:3px;font-family:'Orbitron',monospace;
-  font-size:9px;color:var(--red);letter-spacing:2px;text-align:center;
-  animation:blink-tx 1.2s step-start infinite;
-}
+.tx-banner{display:none;margin:0 10px 8px;padding:5px 8px;background:rgba(255,51,51,.08);
+  border:1px solid rgba(255,51,51,.25);border-radius:3px;font-family:'Orbitron',monospace;
+  font-size:8px;color:var(--red);letter-spacing:2px;text-align:center;
+  animation:blink-tx 1.2s step-start infinite;}
 .tx-banner.show{display:block;}
 @keyframes blink-tx{50%{opacity:.4;}}
 
-/* PTT */
-.ptt-wrap{margin:0 12px 12px;}
-.ptt-btn{
-  width:100%;padding:15px;background:#140e0e;border:2px solid #2e1818;
-  border-radius:4px;color:#884444;font-family:'Orbitron',monospace;
-  font-size:11px;letter-spacing:3px;cursor:pointer;transition:all .05s;
-  user-select:none;text-transform:uppercase;
-}
+.ptt-wrap{margin:0 10px 10px;}
+.ptt-btn{width:100%;padding:14px;background:#140e0e;border:2px solid #2e1818;border-radius:4px;
+  color:#884444;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;
+  cursor:pointer;transition:all .05s;user-select:none;text-transform:uppercase;}
 .ptt-btn:not(.locked):not(:disabled):hover{border-color:#553333;color:#aa5555;}
-.ptt-btn.tx{
-  background:#1c0808;border-color:var(--red);color:var(--red);
-  box-shadow:0 0 24px rgba(255,51,51,.2);
-}
+.ptt-btn.tx{background:#1c0808;border-color:var(--red);color:var(--red);box-shadow:0 0 20px rgba(255,51,51,.2);}
 .ptt-btn.locked,.ptt-btn:disabled{opacity:.45;cursor:not-allowed;}
-.ptt-hint{text-align:center;font-size:10px;color:var(--txt-lo);margin-top:5px;letter-spacing:2px;}
+.ptt-hint{text-align:center;font-size:9px;color:var(--txt-lo);margin-top:4px;letter-spacing:2px;}
 
-/* Audio devices section */
-.dev-wrap{margin:0 12px 12px;}
-.dev-row{display:flex;flex-direction:column;gap:6px;}
-.dev-label{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;}
-select.dev-sel{
-  width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
-  padding:6px 10px;color:var(--txt);font-family:'Rajdhani',sans-serif;
-  font-size:12px;outline:none;cursor:pointer;
-}
+.vhf-div{height:1px;background:var(--border);margin:0 10px 10px;}
 
-/* Callsign */
-.cs-wrap{margin:0 12px 12px;}
-input.cs-in{
-  width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
-  padding:7px 10px;color:var(--amber);font-family:'Orbitron',monospace;
-  font-size:12px;letter-spacing:2px;outline:none;text-transform:uppercase;
-}
+.dev-block{margin:0 10px 8px;}
+.dev-lbl{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+select.dev-sel{width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:6px 9px;color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;outline:none;cursor:pointer;}
+.cs-block{margin:10px 10px 0;}
+.cs-lbl{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+input.cs-in{width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:6px 9px;color:var(--amber);font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;outline:none;text-transform:uppercase;}
 input.cs-in::placeholder{color:var(--amber-lo);}
-input.cs-in:focus{border-color:var(--amber-lo);}
-.cs-label{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;font-weight:700;margin-bottom:5px;}
 
-/* Divider */
-.vhf-div{height:1px;background:var(--border);margin:0 12px 12px;}
-
-/* ── FREQUENCY PANEL ── */
-.freq-panel{width:260px;flex-shrink:0;}
-
-.freq-item{
-  padding:10px 14px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--border);cursor:pointer;
-  transition:background .12s;position:relative;
-}
+/* ── FREQ PANEL ── */
+.freq-panel{width:240px;flex-shrink:0;}
+.freq-item{padding:10px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .12s;position:relative;}
 .freq-item:last-child{border-bottom:none;}
 .freq-item:hover{background:var(--panel-c);}
 .freq-item.tuned{background:#0e1a0e;}
 .freq-item.tuned::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);}
-.freq-item.unicom.tuned::before{background:var(--unicom);}
-
-.fi-dot{width:7px;height:7px;border-radius:50%;background:var(--green-lo);flex-shrink:0;}
+.freq-item.unicom.tuned::before{background:var(--cyan);}
+.fi-dot{width:7px;height:7px;border-radius:50%;background:var(--green-lo);flex-shrink:0;transition:all .3s;}
 .fi-dot.on{background:var(--green);box-shadow:0 0 7px var(--green);}
-.fi-dot.always{background:var(--unicom-lo);}
-.freq-item.tuned .fi-dot.always{background:var(--unicom);box-shadow:0 0 7px var(--unicom);}
-
+.fi-dot.always{background:var(--cyan-lo);}
+.freq-item.tuned .fi-dot.always{background:var(--cyan);box-shadow:0 0 7px var(--cyan);}
 .fi-info{flex:1;}
 .fi-chan{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt);font-weight:700;}
-.fi-detail{font-size:10px;color:var(--txt-lo);margin-top:2px;letter-spacing:1px;}
-.fi-badge{
-  font-family:'Share Tech Mono',monospace;font-size:12px;
-  background:var(--lcd);border:1px solid var(--border);
-  padding:3px 8px;border-radius:2px;color:var(--amber);
-}
-.fi-badge.unicom{color:var(--unicom);}
+.fi-detail{font-size:10px;color:var(--txt-lo);margin-top:1px;}
+.fi-badge{font-family:'Share Tech Mono',monospace;font-size:11px;background:var(--lcd);border:1px solid var(--border);padding:3px 6px;border-radius:2px;color:var(--amber);}
+.fi-badge.unicom{color:var(--cyan);}
 .freq-item.tuned .fi-chan{color:var(--green);}
-.freq-item.unicom.tuned .fi-chan{color:var(--unicom);}
+.freq-item.unicom.tuned .fi-chan{color:var(--cyan);}
+.freq-offline{opacity:.4;pointer-events:none;}
+.freq-hint{padding:10px 12px;font-size:10px;color:var(--txt-lo);text-align:center;border-top:1px solid var(--border);}
 
-.freq-offline{opacity:.4;}
-.freq-offline .fi-badge{color:var(--txt-lo);}
+/* Kicked banner */
+.kick-banner{display:none;margin:10px;padding:8px 12px;background:rgba(255,51,51,.1);
+  border:1px solid rgba(255,51,51,.4);border-radius:4px;font-family:'Orbitron',monospace;
+  font-size:9px;color:var(--red);letter-spacing:2px;text-align:center;
+  animation:blink-tx 1s step-start 5;}
+.kick-banner.show{display:block;}
 
-.freq-hint{padding:14px;font-size:10px;color:var(--txt-lo);letter-spacing:1px;text-align:center;border-top:1px solid var(--border);}
+/* ── CHAT ── */
+.chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:4px 0;}
+.chat-msgs::-webkit-scrollbar{width:4px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px;}
+.msg{padding:4px 12px;display:flex;gap:8px;align-items:flex-start;}
+.msg:hover{background:rgba(255,255,255,.02);}
+.msg-time{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txt-lo);flex-shrink:0;padding-top:2px;}
+.msg-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;flex-shrink:0;}
+.n-me{color:var(--amber);} .n-ctrl{color:var(--green);} .n-user{color:var(--blue);}
+.msg-text{font-size:12px;color:var(--txt);line-height:1.4;word-break:break-word;}
+.t-red{color:var(--red);font-weight:700;} .t-green{color:var(--green);font-weight:700;}
+.sys-line .msg-text{font-size:10px;color:var(--txt-lo);font-style:italic;}
 
-/* STATUS BAR */
-.statusbar{
-  background:#06070a;border-top:1px solid var(--border);
-  padding:5px 20px;display:flex;gap:20px;flex-shrink:0;
-}
-.si{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--txt-lo);letter-spacing:1px;}
+.chat-input-row{border-top:1px solid var(--border);padding:8px 10px;display:flex;gap:8px;flex-shrink:0;}
+.chat-in{flex:1;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:7px 10px;color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;}
+.chat-in::placeholder{color:var(--txt-lo);}
+.chat-in:focus{border-color:var(--border-hi);}
+.chat-in:disabled{opacity:.4;}
+.chat-send{background:#0a160a;border:1px solid #1d3d1d;border-radius:3px;
+  padding:7px 12px;color:var(--green);font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:2px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chat-send:hover:not(:disabled){background:#102010;border-color:var(--green);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Alert overlay for Force ACT */
+.alert-overlay{display:none;position:fixed;inset:0;z-index:9990;pointer-events:none;
+  background:rgba(255,30,30,.08);animation:alert-flash 1s step-start 4;}
+.alert-overlay.show{display:block;}
+@keyframes alert-flash{50%{background:rgba(255,30,30,.2);}}
+
+.statusbar{background:#06070a;border-top:1px solid var(--border);padding:4px 16px;display:flex;gap:16px;flex-shrink:0;}
+.si{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--txt-lo);letter-spacing:1px;}
 .sdot{width:5px;height:5px;border-radius:50%;background:#1a1e24;transition:background .3s;}
 .sdot.ok{background:var(--green);}
 </style>
 </head>
 <body>
-<div class="layout">
+<div class="alert-overlay" id="alertOverlay"></div>
 
+<div class="layout">
   <div class="topbar">
-    <span class="logo">KYKY</span>
-    <div class="sep"></div>
-    <span class="topbar-sub">Station Radio Utilisateur</span>
+    <span class="logo">KYKY</span><div class="sep"></div>
+    <span class="topbar-sub">Station Radio Joueur</span>
     <div class="topbar-right" id="uidLabel"></div>
   </div>
 
   <div class="main">
-
-    <!-- VHF Box -->
+    <!-- VHF BOX -->
     <div class="vhf-box">
       <div class="vhf-top">
         <span class="vhf-brand">VHF COM — TRANSCEIVER</span>
         <span class="vhf-brand">KYKY-500</span>
       </div>
-
-      <!-- Callsign -->
-      <div class="cs-wrap" style="margin-top:12px;">
-        <div class="cs-label">Votre pseudo Minecraft</div>
+      <div class="cs-block">
+        <div class="cs-lbl">Pseudo Minecraft</div>
         <input class="cs-in" id="callsignInput" placeholder="Steve" maxlength="16">
       </div>
-
-      <div class="vhf-div"></div>
-
-      <!-- LCD Display -->
+      <div class="vhf-div" style="margin-top:10px;"></div>
       <div class="lcd-wrap">
-        <div class="lcd-top">
-          <div class="lcd-freq off" id="lcdFreq">---.---</div>
-          <div class="lcd-unit">MHz</div>
-        </div>
-        <div class="lcd-chan" id="lcdChan">— NON CONNECTÉ —</div>
+        <div class="lcd-top"><div class="lcd-freq off" id="lcdFreq">---.---</div><div class="lcd-unit">MHz</div></div>
+        <div class="lcd-chan" id="lcdChan">— SÉLECTIONNEZ UNE FRÉQUENCE —</div>
       </div>
-
+      <div class="kick-banner" id="kickBanner">CONTRÔLEUR DÉCONNECTÉ — FRÉQUENCE FERMÉE</div>
       <div class="tx-banner" id="txBanner">● TX EN COURS</div>
-
       <div class="indics">
-        <div class="indic">
-          <div class="led led-r" id="ledExt"></div>
-          <div class="led-lbl">EXT</div>
-          <div class="led-who" id="extWho"></div>
-        </div>
-        <div class="indic">
-          <div class="led led-g" id="ledVous"></div>
-          <div class="led-lbl">VOUS</div>
-        </div>
+        <div class="indic"><div class="led led-r" id="ledExt"></div><div class="led-lbl">EXT</div><div class="led-who" id="extWho"></div></div>
+        <div class="indic"><div class="led led-g" id="ledVous"></div><div class="led-lbl">VOUS</div></div>
       </div>
-
       <div class="ptt-wrap">
-        <button class="ptt-btn" id="pttBtn" disabled
-          onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
+        <button class="ptt-btn" id="pttBtn" disabled onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
           PTT — APPUYER POUR ÉMETTRE
         </button>
-        <div class="ptt-hint">ESPACE pour activer · Sélectionnez une fréquence</div>
+        <div class="ptt-hint">ESPACE pour activer · sélectionnez une fréquence</div>
       </div>
-
       <div class="vhf-div"></div>
-
-      <!-- Device selectors -->
-      <div class="dev-wrap">
-        <div class="dev-row" style="margin-bottom:8px;">
-          <div class="dev-label">Entrée Micro</div>
-          <select class="dev-sel" id="inDev"></select>
-        </div>
-        <div class="dev-row">
-          <div class="dev-label">Sortie Audio</div>
-          <select class="dev-sel" id="outDev"></select>
-        </div>
+      <div class="dev-block" style="margin-bottom:6px;">
+        <div class="dev-lbl">Entrée Micro</div>
+        <select class="dev-sel" id="inDev"></select>
+      </div>
+      <div class="dev-block" style="margin-bottom:12px;">
+        <div class="dev-lbl">Sortie Audio</div>
+        <select class="dev-sel" id="outDev"></select>
       </div>
     </div>
 
-    <!-- Frequency Selector -->
+    <!-- FREQ SELECTOR -->
     <div class="card freq-panel">
       <div class="card-head">Sélecteur de fréquence</div>
-
-      <!-- UNICOM – always available -->
+      <!-- UNICOM — always there -->
       <div class="freq-item unicom tuned" id="item-UNICOM" onclick="tuneFreq('UNICOM','122.800',this)">
         <div class="fi-dot always" id="dot-UNICOM"></div>
         <div class="fi-info">
@@ -286,93 +224,103 @@ input.cs-in:focus{border-color:var(--amber-lo);}
         </div>
         <div class="fi-badge unicom">122.800</div>
       </div>
-
-      <!-- Controller positions – shown dynamically -->
       <div id="ctrlFreqList"></div>
-
-      <div class="freq-hint">Cliquez sur une fréquence pour vous y connecter</div>
+      <div class="freq-hint">Cliquez pour vous connecter à une fréquence</div>
     </div>
 
+    <!-- CHAT -->
+    <div class="card chat-wrap">
+      <div class="card-head">Chat fréquence</div>
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="msg sys-line"><span class="msg-text">Sélectionnez une fréquence pour rejoindre le chat.</span></div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-in" id="chatIn" placeholder="Message sur la fréquence..." maxlength="200" onkeydown="if(event.key==='Enter')sendChat()" disabled>
+        <button class="chat-send" id="chatSend" onclick="sendChat()" disabled>ENVOYER</button>
+      </div>
+    </div>
   </div>
 
   <div class="statusbar">
     <div class="si"><div class="sdot" id="sdMic"></div><span id="sMic">Micro: —</span></div>
     <div class="si"><div class="sdot" id="sdConn"></div><span id="sConn">Déconnecté</span></div>
-    <div class="si" style="margin-left:auto;font-size:10px;opacity:.35;"><span id="sUID"></span></div>
+    <div class="si" style="margin-left:auto;opacity:.35;font-size:10px;"><span id="sUID"></span></div>
   </div>
-
-</div><!-- /layout -->
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// ══════════════════════════════════════════
-//  FIREBASE
-// ══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyDxDzLbCnqYYVknoyHMzbE0gB_SRVLpgiw",
-  authDomain: "kyky-c3471.firebaseapp.com",
-  databaseURL: "https://kyky-c3471-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kyky-c3471",
-  storageBucket: "kyky-c3471.firebasestorage.app",
-  messagingSenderId: "658643330578",
-  appId: "1:658643330578:web:758dc26d5504a503e39acb",
-  measurementId: "G-245RE41YQK"
-};
-firebase.initializeApp(firebaseConfig);
+/* ═══════════════════════════
+   FIREBASE
+═══════════════════════════ */
+firebase.initializeApp({
+  apiKey:"AIzaSyDxDzLbCnqYYVknoyHMzbE0gB_SRVLpgiw",
+  authDomain:"kyky-c3471.firebaseapp.com",
+  databaseURL:"https://kyky-c3471-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"kyky-c3471",
+  storageBucket:"kyky-c3471.firebasestorage.app",
+  messagingSenderId:"658643330578",
+  appId:"1:658643330578:web:758dc26d5504a503e39acb"
+});
 const db = firebase.database();
 
-// ══════════════════════════════════════════
-//  IDENTITY
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   IDENTITY
+═══════════════════════════ */
 let uid = sessionStorage.getItem('usr_uid');
-if (!uid) {
-  uid = 'USR_' + Math.random().toString(36).substr(2,8).toUpperCase();
-  sessionStorage.setItem('usr_uid', uid);
-}
+if (!uid) { uid = 'USR_' + Math.random().toString(36).substr(2,8).toUpperCase(); sessionStorage.setItem('usr_uid', uid); }
 document.getElementById('uidLabel').textContent = uid;
 document.getElementById('sUID').textContent = 'UID: ' + uid;
 
-// ══════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════
-let currentChan = null; // {name, freq}
+/* ═══════════════════════════
+   CONSTANTS
+═══════════════════════════ */
+const CTRL_DEFS = [
+  {pos:'CTY', freq:'118.800', label:'City · Contrôleur Ville'},
+  {pos:'WLD', freq:'123.500', label:'World · Contrôleur Monde'},
+  {pos:'ARL', freq:'124.615', label:'Aerial · Contrôleur Aérien'},
+];
+// Map freq → pos for kick detection
+const FREQ_TO_POS = { '118.800':'CTY', '123.500':'WLD', '124.615':'ARL' };
+const STUN = { iceServers: [{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}] };
+
+/* ═══════════════════════════
+   STATE
+═══════════════════════════ */
+let currentChan = null;       // {name, freq} or null
 let localStream = null;
 let pttActive = false, pttLocked = false;
 let inDevId = null, outDevId = null;
 let callsign = '';
+let isKicking = false;        // prevent recursive kick
 
 const peers = {};
 const audEls = {};
 const candQueues = {};
 let activeRefs = [];
+let ctrlsData = {};           // latest snapshot of controllers
 
-const STUN = { iceServers:[
-  {urls:'stun:stun.l.google.com:19302'},
-  {urls:'stun:stun1.l.google.com:19302'},
-  {urls:'stun:stun2.l.google.com:19302'}
-]};
-
-// ══════════════════════════════════════════
-//  DEVICES
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   DEVICES
+═══════════════════════════ */
 async function loadDevices() {
   try {
-    const s = await navigator.mediaDevices.getUserMedia({audio:true});
-    s.getTracks().forEach(t => t.stop());
+    const tmp = await navigator.mediaDevices.getUserMedia({audio:true});
+    tmp.getTracks().forEach(t => t.stop());
     const devs = await navigator.mediaDevices.enumerateDevices();
-    const ins = devs.filter(d => d.kind==='audioinput');
-    const outs = devs.filter(d => d.kind==='audiooutput');
-    const inSel = document.getElementById('inDev');
-    const outSel = document.getElementById('outDev');
-    inSel.innerHTML = ins.map((d,i) => `<option value="${d.deviceId}">${d.label||'Micro '+(i+1)}</option>`).join('');
-    outSel.innerHTML = outs.map((d,i) => `<option value="${d.deviceId}">${d.label||'Sortie '+(i+1)}</option>`).join('');
-    inDevId = ins[0]?.deviceId;
+    const ins  = devs.filter(d => d.kind === 'audioinput');
+    const outs = devs.filter(d => d.kind === 'audiooutput');
+    const iS = document.getElementById('inDev');
+    const oS = document.getElementById('outDev');
+    iS.innerHTML = ins.map((d,i)  => `<option value="${d.deviceId}">${d.label||'Micro '+(i+1)}</option>`).join('');
+    oS.innerHTML = outs.map((d,i) => `<option value="${d.deviceId}">${d.label||'Sortie '+(i+1)}</option>`).join('');
+    inDevId  = ins[0]?.deviceId;
     outDevId = outs[0]?.deviceId;
-    inSel.onchange = () => { inDevId = inSel.value; };
-    outSel.onchange = () => {
-      outDevId = outSel.value;
-      Object.values(audEls).forEach(a => { if(a.setSinkId) a.setSinkId(outDevId).catch(()=>{}); });
+    iS.onchange = () => { inDevId  = iS.value; };
+    oS.onchange = () => {
+      outDevId = oS.value;
+      Object.values(audEls).forEach(a => { if (a.setSinkId) a.setSinkId(outDevId).catch(()=>{}); });
     };
     document.getElementById('sdMic').classList.add('ok');
     document.getElementById('sMic').textContent = 'Micro: Prêt';
@@ -381,143 +329,193 @@ async function loadDevices() {
   }
 }
 
-// ══════════════════════════════════════════
-//  FREQUENCY TUNING
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   TUNE A FREQUENCY
+═══════════════════════════ */
 async function tuneFreq(chanName, freq, el) {
-  // Leave previous channel
-  if (currentChan) {
-    await leaveChannel();
-  }
+  if (currentChan) await leaveChannel(false);
 
-  // Get callsign
   callsign = document.getElementById('callsignInput').value.trim() || ('Joueur_' + uid.slice(-4));
 
-  // Get microphone if needed
+  // Get microphone (reuse if already open)
   if (!localStream) {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({
         audio: { deviceId: inDevId ? {exact:inDevId} : undefined, echoCancellation:true, noiseSuppression:true },
         video: false
       });
-      localStream.getAudioTracks().forEach(t => t.enabled = false);
+      localStream.getAudioTracks().forEach(t => { t.enabled = false; });
     } catch(e) {
-      alert('Impossible d\'accéder au microphone:\n'+e.message);
+      alert('Microphone inaccessible:\n' + e.message);
       return;
     }
   }
 
-  // Update UI to show tuned frequency
+  // Update LCD
   document.querySelectorAll('.freq-item').forEach(i => i.classList.remove('tuned'));
   el.classList.add('tuned');
-
-  const lcdFreq = document.getElementById('lcdFreq');
-  const lcdChan = document.getElementById('lcdChan');
-  lcdFreq.textContent = freq;
-  lcdFreq.classList.remove('off');
-  lcdChan.textContent = '— ' + chanName + ' —';
-
+  const lF = document.getElementById('lcdFreq');
+  const lC = document.getElementById('lcdChan');
+  lF.textContent = freq;
   if (chanName === 'UNICOM') {
-    lcdFreq.className = 'lcd-freq unicom';
-    lcdChan.className = 'lcd-chan unicom';
+    lF.className = 'lcd-freq unicom';
+    lC.className = 'lcd-chan unicom';
   } else {
-    lcdFreq.className = 'lcd-freq';
-    lcdChan.className = 'lcd-chan';
+    lF.className = 'lcd-freq';
+    lC.className = 'lcd-chan';
   }
+  lC.textContent = '— ' + chanName + ' —';
+  document.getElementById('kickBanner').classList.remove('show');
 
   currentChan = { name: chanName, freq };
+  const fk = fKey(freq);
 
-  const fk = freqKey(freq);
-
-  // Join session
+  // Join Firebase session
   const memRef = db.ref(`sessions/${fk}/members/${uid}`);
   await memRef.set({ name: callsign, type: 'user', ts: Date.now() });
   memRef.onDisconnect().remove();
   activeRefs.push(memRef);
 
-  // Clear old signaling
+  // Clear stale signaling
   await db.ref(`signaling/${fk}/${uid}`).remove();
 
-  // Listen for signaling
+  // Signaling listener
   const sigRef = db.ref(`signaling/${fk}/${uid}`);
   sigRef.on('child_added', async snap => {
-    const fromId = snap.key;
+    const pid  = snap.key;
     const data = snap.val();
     if (!data) return;
-    if (data.offer && !peers[fromId]) await handleOffer(fromId, data.offer, fk);
-    if (data.answer && peers[fromId]) await handleAnswer(fromId, data.answer);
+    if (data.offer  && !peers[pid]) await handleOffer(pid, data.offer, fk);
+    if (data.answer &&  peers[pid]) await handleAnswer(pid, data.answer);
   });
   activeRefs.push(sigRef);
 
-  // Listen for members
-  const allMemRef = db.ref(`sessions/${fk}/members`);
-  allMemRef.on('child_added', async snap => {
+  // Members
+  const memListRef = db.ref(`sessions/${fk}/members`);
+  memListRef.on('child_added', async snap => {
     const pid = snap.key;
-    if (pid === uid) return;
-    if (peers[pid]) return;
+    if (pid === uid || peers[pid]) return;
     if (uid > pid) await initiateConn(pid, fk);
   });
-  allMemRef.on('child_removed', snap => { killPeer(snap.key); });
-  activeRefs.push(allMemRef);
+  memListRef.on('child_removed', snap => killPeer(snap.key));
+  activeRefs.push(memListRef);
 
-  // Listen for TX state
+  // TX state
   const txRef = db.ref(`sessions/${fk}/transmitting`);
   txRef.on('value', snap => handleTX(snap.val()));
   activeRefs.push(txRef);
 
+  // Chat
+  const chatRef = db.ref(`sessions/${fk}/chat`).limitToLast(100);
+  chatRef.on('child_added', snap => appendMsg(snap.val()));
+  activeRefs.push(chatRef);
+
+  // Commands sent to me
+  const cmdRef = db.ref(`commands/${uid}`);
+  cmdRef.on('child_added', async snap => {
+    const cmd = snap.val(); if (!cmd) return;
+    await snap.ref.remove();
+    handleCommand(cmd);
+  });
+  activeRefs.push(cmdRef);
+
+  // ── CONTROLLER KICK WATCHER ──
+  // If this freq belongs to a controller position, watch for that controller to disconnect
+  const posForFreq = FREQ_TO_POS[freq];
+  if (posForFreq) {
+    const kickRef = db.ref('controllers/' + posForFreq);
+    kickRef.on('value', snap => {
+      // If controller disappears while we're still on their freq → instant kick
+      if (!snap.val() && currentChan?.freq === freq && !isKicking) {
+        isKicking = true;
+        kickFromFreq();
+      }
+    });
+    activeRefs.push(kickRef);
+  }
+
   document.getElementById('pttBtn').disabled = false;
-  document.getElementById('pttBtn').querySelector || (document.getElementById('pttBtn').textContent = 'PTT — APPUYER POUR ÉMETTRE');
+  document.getElementById('chatIn').disabled = false;
+  document.getElementById('chatSend').disabled = false;
   document.getElementById('sConn').textContent = callsign + ' @ ' + freq + ' (' + chanName + ')';
   document.getElementById('sdConn').classList.add('ok');
+  addSys('Connecté sur ' + chanName + ' (' + freq + ' MHz)');
 }
 
-async function leaveChannel() {
+/* ═══════════════════════════
+   KICK (controller left)
+═══════════════════════════ */
+async function kickFromFreq() {
+  addSys('⚠ Contrôleur déconnecté — vous avez été déconnecté de cette fréquence.');
+  document.getElementById('kickBanner').classList.add('show');
+  await leaveChannel(true);
+  isKicking = false;
+}
+
+/* ═══════════════════════════
+   LEAVE CHANNEL
+═══════════════════════════ */
+async function leaveChannel(kicked) {
   if (!currentChan) return;
   stopPTT();
 
-  const fk = freqKey(currentChan.freq);
-  await db.ref(`sessions/${fk}/members/${uid}`).remove();
-  await db.ref(`signaling/${fk}/${uid}`).remove();
+  const fk = fKey(currentChan.freq);
+
+  // Release TX if we hold it
   const txSnap = await db.ref(`sessions/${fk}/transmitting`).get();
   if (txSnap.val()?.uid === uid) await db.ref(`sessions/${fk}/transmitting`).remove();
+
+  await db.ref(`sessions/${fk}/members/${uid}`).remove();
+  await db.ref(`signaling/${fk}/${uid}`).remove();
 
   activeRefs.forEach(r => r.off && r.off());
   activeRefs = [];
 
-  Object.keys(peers).forEach(id => killPeer(id));
+  Object.keys(peers).forEach(killPeer);
 
   currentChan = null;
+
+  // Reset UI
   document.getElementById('pttBtn').disabled = true;
+  document.getElementById('chatIn').disabled = true;
+  document.getElementById('chatSend').disabled = true;
   document.getElementById('sConn').textContent = 'Déconnecté';
   document.getElementById('sdConn').classList.remove('ok');
+  document.getElementById('lcdFreq').className  = 'lcd-freq off';
+  document.getElementById('lcdFreq').textContent = '---.---';
+  document.getElementById('lcdChan').className  = 'lcd-chan';
+  document.getElementById('lcdChan').textContent = kicked ? '— CONTRÔLEUR ABSENT —' : '— SÉLECTIONNEZ UNE FRÉQUENCE —';
   document.getElementById('ledExt').classList.remove('on');
   document.getElementById('ledVous').classList.remove('on');
   document.getElementById('txBanner').classList.remove('show');
   document.getElementById('extWho').textContent = '';
+  document.getElementById('txBanner').classList.remove('show');
+  // Un-tune all freq items
+  document.querySelectorAll('.freq-item').forEach(i => i.classList.remove('tuned'));
 }
 
-// ══════════════════════════════════════════
-//  WebRTC
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   WebRTC
+═══════════════════════════ */
 async function initiateConn(pid, fk) {
   const pc = makePeer(pid, fk);
-  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  await db.ref(`signaling/${fk}/${pid}/${uid}`).set({ offer: {type:offer.type, sdp:offer.sdp} });
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).set({ offer: { type: offer.type, sdp: offer.sdp } });
 }
 
 async function handleOffer(pid, offer, fk) {
   const pc = makePeer(pid, fk);
-  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   await pc.setRemoteDescription(new RTCSessionDescription(offer));
-  for (const c of (candQueues[pid]||[])) {
-    try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+  for (const c of (candQueues[pid] || [])) {
+    try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
   }
   delete candQueues[pid];
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-  await db.ref(`signaling/${fk}/${pid}/${uid}`).update({ answer: {type:answer.type, sdp:answer.sdp} });
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).update({ answer: { type: answer.type, sdp: answer.sdp } });
 }
 
 async function handleAnswer(pid, answer) {
@@ -537,172 +535,253 @@ function makePeer(pid, fk) {
   pc.ontrack = e => {
     let a = audEls[pid];
     if (!a) {
-      a = new Audio(); audEls[pid] = a;
-      if (outDevId && a.setSinkId) a.setSinkId(outDevId).catch(()=>{});
+      a = document.createElement('audio');
+      a.autoplay = true;
+      audEls[pid] = a;
+      if (outDevId && a.setSinkId) a.setSinkId(outDevId).catch(() => {});
     }
-    if (a.srcObject !== e.streams[0]) { a.srcObject = e.streams[0]; a.play().catch(()=>{}); }
+    if (a.srcObject !== e.streams[0]) {
+      a.srcObject = e.streams[0];
+    }
   };
 
   pc.oniceconnectionstatechange = () => {
     if (['disconnected','failed','closed'].includes(pc.iceConnectionState)) killPeer(pid);
   };
 
-  const candRef = db.ref(`signaling/${fk}/${uid}/${pid}/candidates`);
-  candRef.on('child_added', async snap => {
+  const cRef = db.ref(`signaling/${fk}/${uid}/${pid}/candidates`);
+  cRef.on('child_added', async snap => {
     const c = snap.val();
     if (peers[pid]?.remoteDescription) {
-      try { await peers[pid].addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+      try { await peers[pid].addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
     } else {
       if (!candQueues[pid]) candQueues[pid] = [];
       candQueues[pid].push(c);
     }
   });
-  activeRefs.push(candRef);
-
+  activeRefs.push(cRef);
   return pc;
 }
 
 function killPeer(pid) {
   peers[pid]?.close();
   delete peers[pid];
-  if (audEls[pid]) { audEls[pid].pause(); audEls[pid].srcObject = null; delete audEls[pid]; }
+  if (audEls[pid]) {
+    audEls[pid].pause();
+    audEls[pid].srcObject = null;
+    delete audEls[pid];
+  }
   delete candQueues[pid];
 }
 
-// ══════════════════════════════════════════
-//  PTT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   PTT
+═══════════════════════════ */
 function startPTT() {
-  if (!currentChan || pttLocked || pttActive) return;
+  if (!currentChan || pttLocked || pttActive || !localStream) return;
   pttActive = true;
-  localStream?.getAudioTracks().forEach(t => t.enabled = true);
+  localStream.getAudioTracks().forEach(t => { t.enabled = true; });
   document.getElementById('pttBtn').classList.add('tx');
   document.getElementById('ledVous').classList.add('on');
-  const fk = freqKey(currentChan.freq);
   callsign = document.getElementById('callsignInput').value.trim() || callsign;
-  db.ref(`sessions/${fk}/transmitting`).set({ uid, name: callsign, ts: Date.now() });
+  db.ref(`sessions/${fKey(currentChan.freq)}/transmitting`).set({ uid, name: callsign, ts: Date.now() });
 }
 
 function stopPTT() {
   if (!pttActive) return;
   pttActive = false;
-  localStream?.getAudioTracks().forEach(t => t.enabled = false);
+  localStream?.getAudioTracks().forEach(t => { t.enabled = false; });
   document.getElementById('pttBtn').classList.remove('tx');
   document.getElementById('ledVous').classList.remove('on');
   if (currentChan) {
-    const fk = freqKey(currentChan.freq);
-    db.ref(`sessions/${fk}/transmitting`).get().then(snap => {
-      if (snap.val()?.uid === uid) db.ref(`sessions/${fk}/transmitting`).remove();
+    const fk = fKey(currentChan.freq);
+    db.ref(`sessions/${fk}/transmitting`).get().then(s => {
+      if (s.val()?.uid === uid) db.ref(`sessions/${fk}/transmitting`).remove();
     });
   }
 }
 
 function handleTX(data) {
-  const lExt = document.getElementById('ledExt');
-  const lVous = document.getElementById('ledVous');
-  const ptt = document.getElementById('pttBtn');
-  const banner = document.getElementById('txBanner');
-  const who = document.getElementById('extWho');
+  const lE = document.getElementById('ledExt');
+  const lV = document.getElementById('ledVous');
+  const pb = document.getElementById('pttBtn');
+  const bn = document.getElementById('txBanner');
+  const wh = document.getElementById('extWho');
 
   if (data && data.uid !== uid) {
-    lExt.classList.add('on');
-    who.textContent = data.name || '?';
+    lE.classList.add('on');
+    wh.textContent = data.name || '?';
     pttLocked = true;
-    ptt.classList.add('locked');
-    banner.textContent = '● ' + (data.name||'?') + ' EN ÉMISSION';
-    banner.classList.add('show');
+    pb.classList.add('locked');
+    bn.textContent = '● ' + (data.name || '?') + ' EN ÉMISSION';
+    bn.classList.add('show');
     if (pttActive) stopPTT();
   } else if (data && data.uid === uid) {
-    lVous.classList.add('on');
-    lExt.classList.remove('on');
-    who.textContent = '';
-    banner.classList.remove('show');
+    lV.classList.add('on');
+    lE.classList.remove('on');
+    wh.textContent = '';
+    bn.classList.remove('show');
   } else {
-    lExt.classList.remove('on');
-    lVous.classList.remove('on');
-    who.textContent = '';
+    lE.classList.remove('on');
+    lV.classList.remove('on');
+    wh.textContent = '';
     pttLocked = false;
-    ptt.classList.remove('locked');
-    banner.classList.remove('show');
+    pb.classList.remove('locked');
+    bn.classList.remove('show');
   }
 }
 
-// ══════════════════════════════════════════
-//  CONTROLLER POSITIONS → FREQ LIST
-// ══════════════════════════════════════════
-const CTRL_DEFS = [
-  {pos:'CTY', freq:'118.800', label:'City · Contrôleur Ville'},
-  {pos:'WLD', freq:'123.500', label:'World · Contrôleur Monde'},
-  {pos:'ARL', freq:'124.615', label:'Aerial · Contrôleur Aérien'},
-];
+/* ═══════════════════════════
+   CHAT
+═══════════════════════════ */
+function sendChat() {
+  const inp = document.getElementById('chatIn');
+  const txt = inp.value.trim();
+  if (!txt || !currentChan) return;
+  callsign = document.getElementById('callsignInput').value.trim() || callsign;
+  db.ref(`sessions/${fKey(currentChan.freq)}/chat`).push({
+    uid, name: callsign, text: txt, type: 'user', ts: Date.now()
+  });
+  inp.value = '';
+}
 
-let ctrlsData = {};
+function appendMsg(msg) {
+  if (!msg) return;
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const isMe = msg.uid === uid;
+  const ts   = fmtTime(msg.ts);
 
+  if (msg.msgType === 'sys-red' || msg.msgType === 'sys-green') {
+    div.innerHTML = `<span class="msg-time">${ts}</span>`
+      + `<span class="msg-name ${msg.msgType==='sys-red'?'n-user':'n-ctrl'}">${esc(msg.name||'SYS')}</span>`
+      + `<span class="msg-text ${msg.msgType==='sys-red'?'t-red':'t-green'}">${esc(msg.text)}</span>`;
+  } else {
+    const nc = isMe ? 'n-me' : (msg.type === 'controller' ? 'n-ctrl' : 'n-user');
+    div.innerHTML = `<span class="msg-time">${ts}</span>`
+      + `<span class="msg-name ${nc}">${esc(msg.name||'?')}</span>`
+      + `<span class="msg-text">${esc(msg.text)}</span>`;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addSys(txt) {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg sys-line';
+  div.innerHTML = `<span class="msg-text">${esc(txt)}</span>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+/* ═══════════════════════════
+   COMMANDS (received)
+═══════════════════════════ */
+function handleCommand(cmd) {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const ts = fmtTime(Date.now());
+
+  if (cmd.type === 'forceact') {
+    playSound('forceact.mp3', 1.0, true);
+    const ov = document.getElementById('alertOverlay');
+    ov.classList.add('show');
+    setTimeout(() => ov.classList.remove('show'), 4000);
+    div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-user">⚠ CONTRÔLE</span><span class="msg-text t-red">${esc(cmd.message)}</span>`;
+  } else if (cmd.type === 'transfer') {
+    playSound('notification.mp3', 0.9, false);
+    div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-ctrl">↗ TRANSFERT</span><span class="msg-text t-green">${esc(cmd.message)}</span>`;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function playSound(file, vol, alarm) {
+  const a = new Audio(file);
+  a.volume = vol;
+  a.play().catch(() => {
+    try {
+      const ctx = new AudioContext();
+      if (alarm) {
+        [0, 0.28, 0.56].forEach(t => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.frequency.value = 880; g.gain.value = 0.35;
+          o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.18);
+        });
+        setTimeout(() => ctx.close(), 1500);
+      } else {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 660; g.gain.value = 0.25;
+        o.start(); o.stop(ctx.currentTime + 0.3);
+        setTimeout(() => ctx.close(), 600);
+      }
+    } catch(e) {}
+  });
+}
+
+/* ═══════════════════════════
+   FREQ LIST (live controllers)
+═══════════════════════════ */
 function buildFreqList(data) {
   ctrlsData = data || {};
   const list = document.getElementById('ctrlFreqList');
   list.innerHTML = CTRL_DEFS.map(def => {
-    const c = ctrlsData[def.pos];
-    const on = !!c;
+    const c     = ctrlsData[def.pos];
+    const on    = !!c;
     const tuned = currentChan?.freq === def.freq;
-    const offline = on ? '' : 'freq-offline';
-    return `<div class="freq-item ${tuned?'tuned':''} ${offline}" id="item-${def.pos}"
-      onclick="${on ? `tuneFreq('${def.pos}','${def.freq}',this)` : 'showOfflineToast()'}">
-      <div class="fi-dot ${on?'on':''}"></div>
+    return `<div class="freq-item${tuned?' tuned':''}${!on?' freq-offline':''}" id="item-${def.pos}"
+      onclick="${on ? `tuneFreq('${def.pos}','${def.freq}',this)` : ''}">
+      <div class="fi-dot${on?' on':''}"></div>
       <div class="fi-info">
-        <div class="fi-chan">${on ? c.callsign : def.pos}</div>
-        <div class="fi-detail">${def.label} · ${on?'En ligne':'Hors ligne'}</div>
+        <div class="fi-chan">${on ? esc(c.callsign) : def.pos}</div>
+        <div class="fi-detail">${def.label} · ${on ? 'En ligne' : 'Hors ligne'}</div>
       </div>
       <div class="fi-badge">${def.freq}</div>
     </div>`;
   }).join('');
 }
 
-function showOfflineToast() {
-  // small feedback
-  const btn = document.getElementById('pttBtn');
-  const orig = btn.textContent;
-  btn.textContent = 'POSITION HORS LIGNE';
-  setTimeout(() => btn.textContent = orig, 1500);
-}
+/* ═══════════════════════════
+   HELPERS
+═══════════════════════════ */
+function fKey(f)    { return f.replace('.','_'); }
+function fmtTime(ts){ if(!ts)return'--:--'; const t=new Date(ts); return t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0'); }
+function esc(s)     { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ══════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════
-function freqKey(f) { return f.replace('.','_'); }
-
-// ══════════════════════════════════════════
-//  KEYBOARD PTT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   KEYBOARD PTT
+═══════════════════════════ */
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && !e.repeat && currentChan) { e.preventDefault(); startPTT(); }
+  if (e.code === 'Space' && !e.repeat && currentChan && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault(); startPTT();
+  }
 });
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space') { e.preventDefault(); stopPTT(); }
-});
+document.addEventListener('keyup', e => { if (e.code === 'Space') stopPTT(); });
 
-// ══════════════════════════════════════════
-//  UNLOAD
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   UNLOAD
+═══════════════════════════ */
 window.addEventListener('beforeunload', () => {
   if (!currentChan) return;
-  const fk = freqKey(currentChan.freq);
+  const fk = fKey(currentChan.freq);
   db.ref(`sessions/${fk}/members/${uid}`).remove();
   db.ref(`signaling/${fk}/${uid}`).remove();
 });
 
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   INIT
+═══════════════════════════ */
 loadDevices();
 
-// Listen for controllers → update freq list
-db.ref('controllers').on('value', snap => buildFreqList(snap.val()));
-
-// Default: tune UNICOM on load (after devices ready)
-setTimeout(() => {
-  // Pre-select UNICOM display (without joining yet – user clicks to actually join)
-}, 500);
+// Watch controllers → update freq list + trigger kick if needed
+db.ref('controllers').on('value', snap => {
+  buildFreqList(snap.val());
+});
 </script>
 </body>
 </html>
