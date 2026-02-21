@@ -601,6 +601,20 @@ function stopPTT() {
   }
 }
 
+/* ═══════════════════════════
+   STATIC AUDIO (reception)
+═══════════════════════════ */
+const staticAudio = new Audio('static.mp3');
+staticAudio.loop = true;
+staticAudio.volume = 0.07;
+
+function startStatic() {
+  if (staticAudio.paused) staticAudio.play().catch(() => {});
+}
+function stopStatic() {
+  if (!staticAudio.paused) { staticAudio.pause(); staticAudio.currentTime = 0; }
+}
+
 function handleTX(data) {
   const lE = document.getElementById('ledExt');
   const lV = document.getElementById('ledVous');
@@ -609,6 +623,7 @@ function handleTX(data) {
   const wh = document.getElementById('extWho');
 
   if (data && data.uid !== uid) {
+    startStatic();
     lE.classList.add('on');
     wh.textContent = data.name || '?';
     pttLocked = true;
@@ -617,11 +632,13 @@ function handleTX(data) {
     bn.classList.add('show');
     if (pttActive) stopPTT();
   } else if (data && data.uid === uid) {
+    stopStatic();
     lV.classList.add('on');
     lE.classList.remove('on');
     wh.textContent = '';
     bn.classList.remove('show');
   } else {
+    stopStatic();
     lE.classList.remove('on');
     lV.classList.remove('on');
     wh.textContent = '';
