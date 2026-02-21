@@ -686,26 +686,27 @@ function handleCommand(cmd) {
   const ts = fmtTime(Date.now());
 
   if (cmd.type === 'forceact') {
-    playSound('forceact.mp3', 1.0, true);
+    playSound('forceact.mp3', 1.0, 'alarm');
     const ov = document.getElementById('alertOverlay');
     ov.classList.add('show');
     setTimeout(() => ov.classList.remove('show'), 4000);
     div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-user">⚠ CONTRÔLE</span><span class="msg-text t-red">${esc(cmd.message)}</span>`;
   } else if (cmd.type === 'transfer') {
-    playSound('notification.mp3', 0.9, false);
+    playSound('notification.mp3', 0.7, 'calm');
     div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-ctrl">↗ TRANSFERT</span><span class="msg-text t-green">${esc(cmd.message)}</span>`;
   }
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
 }
 
-function playSound(file, vol, alarm) {
+function playSound(file, vol, type) {
   const a = new Audio(file);
   a.volume = vol;
   a.play().catch(() => {
     try {
       const ctx = new AudioContext();
-      if (alarm) {
+      if (type === 'alarm') {
+        // 3 sharp beeps
         [0, 0.28, 0.56].forEach(t => {
           const o = ctx.createOscillator(), g = ctx.createGain();
           o.connect(g); g.connect(ctx.destination);
@@ -714,11 +715,18 @@ function playSound(file, vol, alarm) {
         });
         setTimeout(() => ctx.close(), 1500);
       } else {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = 660; g.gain.value = 0.25;
-        o.start(); o.stop(ctx.currentTime + 0.3);
-        setTimeout(() => ctx.close(), 600);
+        // Calm: two gentle chime tones
+        const now = ctx.currentTime;
+        [[523, 0], [659, 0.18]].forEach(([freq, delay]) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = 'sine'; o.frequency.value = freq;
+          g.gain.setValueAtTime(0, now + delay);
+          g.gain.linearRampToValueAtTime(0.22, now + delay + 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.6);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(now + delay); o.stop(now + delay + 0.7);
+        });
+        setTimeout(() => ctx.close(), 1200);
       }
     } catch(e) {}
   });
