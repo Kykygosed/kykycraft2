@@ -6,374 +6,362 @@
 <title>KYKY RADIO — CONTRÔLEUR ATC</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #07080a;
-  --panel: #0f1113;
-  --panel-b: #13161a;
-  --panel-c: #1a1e24;
-  --border: #232830;
-  --border-hi: #363d48;
-  --amber: #ffaa00;
-  --amber-lo: #3d2800;
-  --amber-mid: #8a5a00;
-  --green: #00e647;
-  --green-lo: #002d10;
-  --red: #ff3333;
-  --red-lo: #2d0808;
-  --txt: #b8bec8;
-  --txt-lo: #4a5060;
-  --txt-mid: #7a8290;
-  --lcd: #080f08;
+:root{
+  --bg:#07080a;--panel:#0f1113;--panel-b:#13161a;--panel-c:#1a1e24;
+  --border:#232830;--border-hi:#363d48;
+  --amber:#ffaa00;--amber-lo:#3d2800;--amber-mid:#8a5a00;
+  --green:#00e647;--green-lo:#002d10;--green-dim:#006622;
+  --red:#ff3333;--red-lo:#2d0808;
+  --blue:#4488ff;
+  --txt:#b8bec8;--txt-lo:#4a5060;--txt-mid:#7a8290;
+  --lcd:#080f08;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;}
-
-/* Scanlines overlay for CRT feel */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
-}
-
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
 .layout{display:flex;flex-direction:column;height:100%;}
 
-/* ── TOPBAR ── */
-.topbar{
-  background:#090b0d;border-bottom:1px solid var(--border);
-  padding:0 20px;height:44px;display:flex;align-items:center;gap:16px;flex-shrink:0;
-}
-.logo{font-family:'Orbitron',monospace;font-size:15px;color:var(--amber);letter-spacing:4px;font-weight:700;}
-.sep{width:1px;height:20px;background:var(--border);}
-.topbar-sub{font-size:11px;color:var(--txt-lo);letter-spacing:3px;text-transform:uppercase;}
+.topbar{background:#090b0d;border-bottom:1px solid var(--border);padding:0 16px;height:42px;
+  display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.logo{font-family:'Orbitron',monospace;font-size:14px;color:var(--amber);letter-spacing:4px;font-weight:700;}
+.sep{width:1px;height:18px;background:var(--border);}
+.topbar-sub{font-size:10px;color:var(--txt-lo);letter-spacing:3px;text-transform:uppercase;}
 .topbar-right{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txt-lo);}
 
-/* ── MAIN AREA ── */
-.main{flex:1;display:flex;gap:16px;padding:16px;overflow:auto;align-items:flex-start;}
+.main{flex:1;display:flex;gap:12px;padding:12px;overflow:hidden;}
 
-/* ── PANEL BASE ── */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:5px;overflow:hidden;}
-.card-head{
-  background:#0b0d0f;border-bottom:1px solid var(--border);
-  padding:7px 14px;font-size:10px;font-weight:700;
-  letter-spacing:3px;color:var(--txt-lo);text-transform:uppercase;
-}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:5px;
+  display:flex;flex-direction:column;overflow:hidden;}
+.card-head{background:#0b0d0f;border-bottom:1px solid var(--border);padding:6px 12px;
+  font-size:10px;font-weight:700;letter-spacing:3px;color:var(--txt-lo);text-transform:uppercase;flex-shrink:0;}
 
-/* ── CONNECTION MANAGER ── */
-.conn-panel{width:250px;flex-shrink:0;}
+/* ── COL LEFT ── */
+.col-left{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
 
-.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
-.pos-btn{
-  background:var(--panel);border:none;padding:13px 6px;cursor:pointer;
-  text-align:center;transition:background .15s;position:relative;
-}
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.pos-btn{background:var(--panel);border:none;padding:11px 4px;cursor:pointer;text-align:center;
+  transition:background .15s;position:relative;}
 .pos-btn:hover{background:var(--panel-c);}
 .pos-btn.active{background:#0e1a0c;}
 .pos-btn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);}
-.pos-code{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:var(--txt-lo);}
+.pos-code{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--txt-lo);}
 .pos-btn.active .pos-code{color:var(--green);}
-.pos-name{font-size:9px;color:var(--txt-lo);letter-spacing:1px;margin-top:3px;text-transform:uppercase;}
-.pos-hz{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--amber-lo);margin-top:4px;}
+.pos-name{font-size:8px;color:var(--txt-lo);letter-spacing:1px;margin-top:2px;text-transform:uppercase;}
+.pos-hz{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--amber-lo);margin-top:3px;}
 .pos-btn.active .pos-hz{color:var(--amber);}
 
-.fg{padding:12px 14px;border-bottom:1px solid var(--border);}
-.fl{font-size:10px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;margin-bottom:6px;font-weight:700;}
-input.fi,select.fi{
-  width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
-  padding:7px 10px;color:var(--amber);font-family:'Orbitron',monospace;
-  font-size:12px;letter-spacing:2px;outline:none;text-transform:uppercase;
-  transition:border-color .15s;
-}
+.fg{padding:10px 12px;border-bottom:1px solid var(--border);}
+.fl{font-size:9px;letter-spacing:2px;color:var(--txt-lo);text-transform:uppercase;margin-bottom:5px;font-weight:700;}
+input.fi,select.fi{width:100%;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:6px 9px;color:var(--amber);font-family:'Orbitron',monospace;font-size:11px;
+  letter-spacing:2px;outline:none;text-transform:uppercase;}
 input.fi::placeholder{color:var(--amber-lo);}
-input.fi:focus{border-color:var(--amber-lo);}
-select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:0;cursor:pointer;}
-
-.conn-btn{
-  display:block;width:calc(100% - 24px);margin:12px;padding:11px;
+select.fi{color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:0;cursor:pointer;}
+.conn-btn{display:block;width:calc(100% - 20px);margin:10px;padding:10px;
   background:#0a160a;border:1px solid #1d3d1d;border-radius:3px;
-  color:var(--green);font-family:'Orbitron',monospace;font-size:11px;
-  letter-spacing:3px;cursor:pointer;transition:all .15s;text-transform:uppercase;
-}
+  color:var(--green);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;
+  cursor:pointer;transition:all .15s;text-transform:uppercase;}
 .conn-btn:hover:not(:disabled){background:#102010;border-color:var(--green);}
 .conn-btn.disc{background:#160a0a;border-color:#3d1d1d;color:var(--red);}
 .conn-btn:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ── VHF BOX ── */
-.vhf-box{
-  width:300px;flex-shrink:0;
-  background:var(--panel-b);border:2px solid var(--border-hi);
-  border-radius:7px;
-  box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
-}
-.vhf-top{
-  background:#090b0d;border-bottom:1px solid var(--border);
-  padding:6px 12px;display:flex;justify-content:space-between;align-items:center;
-}
-.vhf-brand{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--txt-lo);}
+.users-panel{flex:1;overflow:hidden;}
+.usr-scroll{overflow-y:auto;height:100%;}
+.usr-row{padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);
+  cursor:context-menu;transition:background .12s;user-select:none;}
+.usr-row:hover{background:var(--panel-c);}
+.usr-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
+.usr-name{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt);}
+.usr-hint{font-size:9px;color:var(--txt-lo);margin-top:1px;letter-spacing:1px;}
+.no-users{padding:20px;text-align:center;color:var(--txt-lo);font-size:10px;letter-spacing:2px;}
 
-/* LCD Display */
-.lcd-wrap{margin:12px;background:var(--lcd);border-radius:3px;
-  border:1px solid #0a180a;box-shadow:inset 0 2px 12px rgba(0,0,0,.7);padding:10px 14px;}
-.lcd-top{display:flex;align-items:baseline;gap:6px;justify-content:center;}
-.lcd-freq{
-  font-family:'Share Tech Mono',monospace;font-size:36px;
-  color:var(--amber);letter-spacing:3px;
-  text-shadow:0 0 24px rgba(255,170,0,.5),0 0 48px rgba(255,170,0,.2);
-  transition:all .3s;
-}
+/* ── COL CENTER ── */
+.col-center{width:285px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+
+.vhf-box{background:var(--panel-b);border:2px solid var(--border-hi);border-radius:7px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);}
+.vhf-top{background:#090b0d;border-bottom:1px solid var(--border);padding:5px 10px;
+  display:flex;justify-content:space-between;align-items:center;}
+.vhf-brand{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--txt-lo);}
+.lcd-wrap{margin:10px;background:var(--lcd);border-radius:3px;border:1px solid #0a180a;
+  box-shadow:inset 0 2px 12px rgba(0,0,0,.7);padding:8px 12px;}
+.lcd-top{display:flex;align-items:baseline;gap:5px;justify-content:center;}
+.lcd-freq{font-family:'Share Tech Mono',monospace;font-size:32px;color:var(--amber);letter-spacing:3px;
+  text-shadow:0 0 20px rgba(255,170,0,.5);transition:all .3s;}
 .lcd-freq.off{color:var(--amber-lo);text-shadow:none;}
-.lcd-unit{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--amber-mid);align-self:flex-end;padding-bottom:4px;}
-.lcd-pos{
-  text-align:center;font-family:'Orbitron',monospace;
-  font-size:9px;color:var(--txt-lo);letter-spacing:3px;margin-top:4px;
-}
+.lcd-unit{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--amber-mid);align-self:flex-end;padding-bottom:3px;}
+.lcd-pos{text-align:center;font-family:'Orbitron',monospace;font-size:8px;color:var(--txt-lo);letter-spacing:3px;margin-top:3px;}
 
-/* Indicators */
-.indics{display:flex;gap:8px;margin:0 12px 12px;}
-.indic{
-  flex:1;background:#0a0c0e;border:1px solid var(--border);border-radius:3px;
-  padding:8px 8px;display:flex;align-items:center;gap:8px;
-}
-.led{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:all .08s;}
+.indics{display:flex;gap:7px;margin:0 10px 10px;}
+.indic{flex:1;background:#0a0c0e;border:1px solid var(--border);border-radius:3px;
+  padding:6px 7px;display:flex;align-items:center;gap:7px;}
+.led{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background .08s,box-shadow .08s;}
 .led-r{background:var(--red-lo);}
 .led-g{background:var(--green-lo);}
-.led-r.on{background:var(--red);box-shadow:0 0 10px var(--red),0 0 20px rgba(255,51,51,.4);}
-.led-g.on{background:var(--green);box-shadow:0 0 10px var(--green),0 0 20px rgba(0,230,71,.4);}
-.led-lbl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--txt-lo);font-weight:700;}
-.led-who{font-size:9px;color:var(--txt-lo);margin-left:auto;font-family:'Share Tech Mono',monospace;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.led-r.on{background:var(--red);box-shadow:0 0 8px var(--red);}
+.led-g.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+.led-lbl{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--txt-lo);font-weight:700;}
+.led-who{font-size:8px;color:var(--txt-lo);margin-left:auto;font-family:'Share Tech Mono',monospace;
+  max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* TX Banner */
-.tx-banner{
-  display:none;margin:0 12px 10px;padding:6px 10px;
-  background:rgba(255,51,51,.08);border:1px solid rgba(255,51,51,.25);
-  border-radius:3px;font-family:'Orbitron',monospace;
-  font-size:9px;color:var(--red);letter-spacing:2px;text-align:center;
-  animation:blink-tx 1.2s step-start infinite;
-}
+.tx-banner{display:none;margin:0 10px 8px;padding:5px 8px;background:rgba(255,51,51,.08);
+  border:1px solid rgba(255,51,51,.25);border-radius:3px;font-family:'Orbitron',monospace;
+  font-size:8px;color:var(--red);letter-spacing:2px;text-align:center;
+  animation:blink-tx 1.2s step-start infinite;}
 .tx-banner.show{display:block;}
 @keyframes blink-tx{50%{opacity:.4;}}
 
-/* PTT */
-.ptt-wrap{margin:0 12px 14px;}
-.ptt-btn{
-  width:100%;padding:15px;background:#140e0e;border:2px solid #2e1818;
-  border-radius:4px;color:#884444;font-family:'Orbitron',monospace;
-  font-size:11px;letter-spacing:3px;cursor:pointer;transition:all .05s;
-  user-select:none;position:relative;text-transform:uppercase;
-}
+.ptt-wrap{margin:0 10px 12px;}
+.ptt-btn{width:100%;padding:13px;background:#140e0e;border:2px solid #2e1818;border-radius:4px;
+  color:#884444;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;
+  cursor:pointer;transition:all .05s;user-select:none;text-transform:uppercase;}
 .ptt-btn:not(.locked):not(:disabled):hover{border-color:#553333;color:#aa5555;}
-.ptt-btn.tx{
-  background:#1c0808;border-color:var(--red);color:var(--red);
-  box-shadow:0 0 24px rgba(255,51,51,.2);
-}
+.ptt-btn.tx{background:#1c0808;border-color:var(--red);color:var(--red);box-shadow:0 0 20px rgba(255,51,51,.2);}
 .ptt-btn.locked,.ptt-btn:disabled{opacity:.45;cursor:not-allowed;}
-.ptt-hint{text-align:center;font-size:10px;color:var(--txt-lo);margin-top:5px;letter-spacing:2px;}
+.ptt-hint{text-align:center;font-size:9px;color:var(--txt-lo);margin-top:4px;letter-spacing:2px;}
 
-/* ── ONLINE PANEL ── */
-.online-panel{flex:1;min-width:240px;}
-.pos-row{
-  padding:10px 14px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--border);
-}
-.pos-row:last-child{border-bottom:none;}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green-lo);flex-shrink:0;transition:all .3s;}
-.dot.on{background:var(--green);box-shadow:0 0 7px var(--green);}
-.row-info{flex:1;}
-.row-call{font-family:'Orbitron',monospace;font-size:12px;color:var(--txt);font-weight:700;}
-.row-detail{font-size:11px;color:var(--txt-lo);margin-top:2px;}
-.freq-badge{
-  font-family:'Share Tech Mono',monospace;font-size:11px;
-  background:var(--lcd);border:1px solid var(--border);
-  padding:3px 8px;border-radius:2px;color:var(--amber);
-}
-.no-ctrl{padding:24px;text-align:center;color:var(--txt-lo);font-size:11px;letter-spacing:2px;}
+/* ── COL RIGHT ── */
+.col-right{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;}
 
-/* ── STATUS BAR ── */
-.statusbar{
-  background:#06070a;border-top:1px solid var(--border);
-  padding:5px 20px;display:flex;gap:20px;flex-shrink:0;
-}
-.si{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--txt-lo);letter-spacing:1px;}
+.pos-row-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.pos-card{background:var(--panel);padding:10px 12px;display:flex;align-items:center;gap:8px;}
+.pos-dot2{width:7px;height:7px;border-radius:50%;background:var(--green-lo);flex-shrink:0;transition:all .3s;}
+.pos-dot2.on{background:var(--green);box-shadow:0 0 7px var(--green);}
+.pos-card-info{flex:1;}
+.pos-card-call{font-family:'Orbitron',monospace;font-size:11px;color:var(--txt-lo);}
+.pos-card-call.on{color:var(--green);}
+.pos-card-sub{font-size:10px;color:var(--txt-lo);margin-top:1px;}
+.pos-card-freq{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--amber);
+  background:var(--lcd);border:1px solid var(--border);padding:2px 6px;border-radius:2px;}
+
+.chat-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-msgs{flex:1;overflow-y:auto;padding:4px 0;}
+.chat-msgs::-webkit-scrollbar{width:4px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px;}
+.msg{padding:4px 12px;display:flex;gap:8px;align-items:flex-start;}
+.msg:hover{background:rgba(255,255,255,.02);}
+.msg-time{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--txt-lo);flex-shrink:0;padding-top:2px;}
+.msg-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;flex-shrink:0;}
+.n-me{color:var(--amber);} .n-ctrl{color:var(--green);} .n-user{color:var(--blue);} .n-sys{color:var(--txt-lo);}
+.msg-text{font-size:12px;color:var(--txt);line-height:1.4;word-break:break-word;}
+.t-red{color:var(--red);font-weight:700;} .t-green{color:var(--green);font-weight:700;}
+.sys-line .msg-text{font-size:10px;color:var(--txt-lo);font-style:italic;}
+
+.chat-input-row{border-top:1px solid var(--border);padding:8px 10px;display:flex;gap:8px;flex-shrink:0;}
+.chat-in{flex:1;background:#08090b;border:1px solid var(--border);border-radius:3px;
+  padding:7px 10px;color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;}
+.chat-in::placeholder{color:var(--txt-lo);}
+.chat-in:focus{border-color:var(--border-hi);}
+.chat-in:disabled{opacity:.4;}
+.chat-send{background:#0a160a;border:1px solid #1d3d1d;border-radius:3px;
+  padding:7px 12px;color:var(--green);font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:2px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chat-send:hover:not(:disabled){background:#102010;border-color:var(--green);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── CONTEXT MENU ── */
+.ctx-menu{position:fixed;background:#111318;border:1px solid var(--border-hi);border-radius:5px;
+  z-index:10000;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.85);overflow:hidden;
+  font-family:'Rajdhani',sans-serif;display:none;}
+.ctx-hdr{padding:6px 12px;font-size:9px;letter-spacing:2px;color:var(--amber);
+  text-transform:uppercase;border-bottom:1px solid var(--border);background:#0d0f12;font-weight:700;}
+.ctx-item{padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px;transition:background .1s;}
+.ctx-item:hover{background:var(--panel-c);}
+.ctx-item.danger{color:var(--red);}
+.ctx-item.xfer{color:var(--green);}
+.ctx-ico{font-size:11px;width:14px;text-align:center;}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0;}
+.ctx-sub{display:none;border-top:1px solid var(--border);}
+.ctx-sub.open{display:block;}
+.ctx-sub-item{padding:8px 14px 8px 28px;cursor:pointer;font-size:12px;color:var(--green);transition:background .1s;}
+.ctx-sub-item:hover{background:var(--panel-c);}
+.ctx-sub-item.off{color:var(--txt-lo);cursor:default;pointer-events:none;}
+
+.statusbar{background:#06070a;border-top:1px solid var(--border);padding:4px 16px;display:flex;gap:16px;flex-shrink:0;}
+.si{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--txt-lo);letter-spacing:1px;}
 .sdot{width:5px;height:5px;border-radius:50%;background:#1a1e24;transition:background .3s;}
 .sdot.ok{background:var(--green);}
 </style>
 </head>
 <body>
 <div class="layout">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <span class="logo">KYKY</span>
-    <div class="sep"></div>
+    <span class="logo">KYKY</span><div class="sep"></div>
     <span class="topbar-sub">Station de Contrôle ATC</span>
     <div class="topbar-right" id="uidLabel"></div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
-
-    <!-- Connection Manager -->
-    <div class="card conn-panel">
-      <div class="card-head">Gestionnaire de connexion</div>
-
-      <div class="pos-grid">
-        <button class="pos-btn" data-pos="CTY" data-freq="118.800" onclick="selectPos(this)">
-          <div class="pos-code">CTY</div>
-          <div class="pos-name">City</div>
-          <div class="pos-hz">118.800</div>
-        </button>
-        <button class="pos-btn" data-pos="WLD" data-freq="123.500" onclick="selectPos(this)">
-          <div class="pos-code">WLD</div>
-          <div class="pos-name">World</div>
-          <div class="pos-hz">123.500</div>
-        </button>
-        <button class="pos-btn" data-pos="ARL" data-freq="124.615" onclick="selectPos(this)">
-          <div class="pos-code">ARL</div>
-          <div class="pos-name">Aerial</div>
-          <div class="pos-hz">124.615</div>
-        </button>
-      </div>
-
-      <div class="fg">
-        <div class="fl">Callsign</div>
-        <input class="fi" id="callsignInput" placeholder="KYKY_CTY" maxlength="12">
-      </div>
-      <div class="fg">
-        <div class="fl">Entrée Micro</div>
-        <select class="fi" id="inDev"></select>
-      </div>
-      <div class="fg" style="border-bottom:none;">
-        <div class="fl">Sortie Audio</div>
-        <select class="fi" id="outDev"></select>
-      </div>
-
-      <button class="conn-btn" id="connBtn" disabled onclick="toggleConn()">Se Connecter</button>
-    </div>
-
-    <!-- VHF Box -->
-    <div class="vhf-box">
-      <div class="vhf-top">
-        <span class="vhf-brand">VHF COM — TRANSCEIVER</span>
-        <span class="vhf-brand">KYKY-1000</span>
-      </div>
-
-      <div class="lcd-wrap">
-        <div class="lcd-top">
-          <div class="lcd-freq off" id="lcdFreq">---.---</div>
-          <div class="lcd-unit">MHz</div>
+    <!-- COL LEFT -->
+    <div class="col-left">
+      <div class="card">
+        <div class="card-head">Gestionnaire de connexion</div>
+        <div class="pos-grid">
+          <button class="pos-btn" data-pos="CTY" data-freq="118.800" onclick="selectPos(this)">
+            <div class="pos-code">CTY</div><div class="pos-name">City</div><div class="pos-hz">118.800</div>
+          </button>
+          <button class="pos-btn" data-pos="WLD" data-freq="123.500" onclick="selectPos(this)">
+            <div class="pos-code">WLD</div><div class="pos-name">World</div><div class="pos-hz">123.500</div>
+          </button>
+          <button class="pos-btn" data-pos="ARL" data-freq="124.615" onclick="selectPos(this)">
+            <div class="pos-code">ARL</div><div class="pos-name">Aerial</div><div class="pos-hz">124.615</div>
+          </button>
         </div>
-        <div class="lcd-pos" id="lcdPos">— NON CONNECTÉ —</div>
+        <div class="fg"><div class="fl">Callsign</div><input class="fi" id="callsignInput" placeholder="KYKY_CTY" maxlength="12"></div>
+        <div class="fg"><div class="fl">Entrée Micro</div><select class="fi" id="inDev"></select></div>
+        <div class="fg" style="border-bottom:none;"><div class="fl">Sortie Audio</div><select class="fi" id="outDev"></select></div>
+        <button class="conn-btn" id="connBtn" disabled onclick="toggleConn()">Se Connecter</button>
       </div>
-
-      <div class="tx-banner" id="txBanner">● TX EN COURS</div>
-
-      <div class="indics">
-        <div class="indic">
-          <div class="led led-r" id="ledExt"></div>
-          <div class="led-lbl">EXT</div>
-          <div class="led-who" id="extWho"></div>
-        </div>
-        <div class="indic">
-          <div class="led led-g" id="ledVous"></div>
-          <div class="led-lbl">VOUS</div>
-        </div>
-      </div>
-
-      <div class="ptt-wrap">
-        <button class="ptt-btn" id="pttBtn" disabled
-          onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
-          PTT — APPUYER POUR ÉMETTRE
-        </button>
-        <div class="ptt-hint">ESPACE pour activer le PTT</div>
+      <div class="card users-panel">
+        <div class="card-head">Connectés sur ma fréquence</div>
+        <div class="usr-scroll" id="usrList"><div class="no-users">Non connecté</div></div>
       </div>
     </div>
 
-    <!-- Online Positions -->
-    <div class="card online-panel">
-      <div class="card-head">Positions en ligne</div>
-      <div id="onlineList"><div class="no-ctrl">Aucun contrôleur connecté</div></div>
+    <!-- COL CENTER -->
+    <div class="col-center">
+      <div class="vhf-box">
+        <div class="vhf-top">
+          <span class="vhf-brand">VHF COM — TRANSCEIVER</span>
+          <span class="vhf-brand">KYKY-1000</span>
+        </div>
+        <div class="lcd-wrap">
+          <div class="lcd-top"><div class="lcd-freq off" id="lcdFreq">---.---</div><div class="lcd-unit">MHz</div></div>
+          <div class="lcd-pos" id="lcdPos">— NON CONNECTÉ —</div>
+        </div>
+        <div class="tx-banner" id="txBanner">● TX EN COURS</div>
+        <div class="indics">
+          <div class="indic"><div class="led led-r" id="ledExt"></div><div class="led-lbl">EXT</div><div class="led-who" id="extWho"></div></div>
+          <div class="indic"><div class="led led-g" id="ledVous"></div><div class="led-lbl">VOUS</div></div>
+        </div>
+        <div class="ptt-wrap">
+          <button class="ptt-btn" id="pttBtn" disabled onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
+            PTT — APPUYER POUR ÉMETTRE
+          </button>
+          <div class="ptt-hint">ESPACE pour activer le PTT</div>
+        </div>
+      </div>
     </div>
 
-  </div><!-- /main -->
+    <!-- COL RIGHT -->
+    <div class="col-right">
+      <div class="card">
+        <div class="card-head">Positions en ligne</div>
+        <div class="pos-row-grid">
+          <div class="pos-card"><div class="pos-dot2" id="dot-CTY"></div><div class="pos-card-info"><div class="pos-card-call" id="call-CTY">CTY</div><div class="pos-card-sub" id="sub-CTY">City · Hors ligne</div></div><div class="pos-card-freq">118.800</div></div>
+          <div class="pos-card"><div class="pos-dot2" id="dot-WLD"></div><div class="pos-card-info"><div class="pos-card-call" id="call-WLD">WLD</div><div class="pos-card-sub" id="sub-WLD">World · Hors ligne</div></div><div class="pos-card-freq">123.500</div></div>
+          <div class="pos-card"><div class="pos-dot2" id="dot-ARL"></div><div class="pos-card-info"><div class="pos-card-call" id="call-ARL">ARL</div><div class="pos-card-sub" id="sub-ARL">Aerial · Hors ligne</div></div><div class="pos-card-freq">124.615</div></div>
+        </div>
+      </div>
+      <div class="card chat-panel">
+        <div class="card-head">Chat fréquence</div>
+        <div class="chat-msgs" id="chatMsgs"><div class="msg sys-line"><span class="msg-text">Connectez-vous pour accéder au chat.</span></div></div>
+        <div class="chat-input-row">
+          <input class="chat-in" id="chatIn" placeholder="Message sur la fréquence..." maxlength="200" onkeydown="if(event.key==='Enter')sendChat()" disabled>
+          <button class="chat-send" id="chatSend" onclick="sendChat()" disabled>ENVOYER</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- STATUS BAR -->
   <div class="statusbar">
     <div class="si"><div class="sdot" id="sdMic"></div><span id="sMic">Micro: —</span></div>
     <div class="si"><div class="sdot" id="sdConn"></div><span id="sConn">Déconnecté</span></div>
-    <div class="si" style="margin-left:auto;font-size:10px;opacity:.35;"><span id="sUID"></span></div>
+    <div class="si" style="margin-left:auto;opacity:.35;font-size:10px;"><span id="sUID"></span></div>
   </div>
+</div>
 
-</div><!-- /layout -->
+<!-- Context Menu -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-hdr" id="ctxTitle">Options</div>
+  <div class="ctx-item danger" onclick="doForceACT()"><span class="ctx-ico">⚠</span>Force ACT</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item xfer" onclick="toggleSub()"><span class="ctx-ico">↗</span>Transférer vers...</div>
+  <div class="ctx-sub" id="ctxSub"></div>
+</div>
 
-<!-- Firebase SDKs (compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 <script>
-// ══════════════════════════════════════════
-//  FIREBASE INIT
-// ══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyDxDzLbCnqYYVknoyHMzbE0gB_SRVLpgiw",
-  authDomain: "kyky-c3471.firebaseapp.com",
-  databaseURL: "https://kyky-c3471-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kyky-c3471",
-  storageBucket: "kyky-c3471.firebasestorage.app",
-  messagingSenderId: "658643330578",
-  appId: "1:658643330578:web:758dc26d5504a503e39acb",
-  measurementId: "G-245RE41YQK"
-};
-firebase.initializeApp(firebaseConfig);
+/* ═══════════════════════════
+   FIREBASE
+═══════════════════════════ */
+firebase.initializeApp({
+  apiKey:"AIzaSyDxDzLbCnqYYVknoyHMzbE0gB_SRVLpgiw",
+  authDomain:"kyky-c3471.firebaseapp.com",
+  databaseURL:"https://kyky-c3471-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"kyky-c3471",
+  storageBucket:"kyky-c3471.firebasestorage.app",
+  messagingSenderId:"658643330578",
+  appId:"1:658643330578:web:758dc26d5504a503e39acb"
+});
 const db = firebase.database();
 
-// ══════════════════════════════════════════
-//  IDENTITY
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   IDENTITY
+═══════════════════════════ */
 let uid = sessionStorage.getItem('atc_uid');
-if (!uid) {
-  uid = 'ATC_' + Math.random().toString(36).substr(2,8).toUpperCase();
-  sessionStorage.setItem('atc_uid', uid);
-}
+if (!uid) { uid = 'ATC_' + Math.random().toString(36).substr(2,8).toUpperCase(); sessionStorage.setItem('atc_uid', uid); }
 document.getElementById('uidLabel').textContent = uid;
 document.getElementById('sUID').textContent = 'UID: ' + uid;
 
-// ══════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   CONSTANTS
+═══════════════════════════ */
+const CTRL_DEFS = [
+  {pos:'CTY', freq:'118.800', label:'City'},
+  {pos:'WLD', freq:'123.500', label:'World'},
+  {pos:'ARL', freq:'124.615', label:'Aerial'},
+];
+const FORCE_ACT_MSG = {
+  CTY: 'GOOD DAY PLEASE CONTACT CITY ON 118.800',
+  WLD: 'GOOD DAY PLEASE CONTACT WORLD ON 123.500',
+  ARL: 'GOOD DAY PLEASE CONTACT AERIAL ON 124.615',
+};
+const STUN = { iceServers: [{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}] };
+
+/* ═══════════════════════════
+   STATE
+═══════════════════════════ */
 let selPos = null, selFreq = null, callsign = '';
 let connected = false;
 let localStream = null;
 let pttActive = false, pttLocked = false;
 let inDevId = null, outDevId = null;
 
-const peers = {};          // peerId → RTCPeerConnection
-const audEls = {};         // peerId → HTMLAudioElement
-const candQueues = {};     // peerId → [candidate]
+// peerId → RTCPeerConnection
+const peers = {};
+// peerId → <audio> element
+const audEls = {};
+// peerId → [ICE candidates waiting for remote desc]
+const candQueues = {};
 
-let activeRefs = [];       // firebase refs to clean up
+let activeRefs = [];
+let connectedMembers = {};
+let onlineControllers = {};
 
-const STUN = { iceServers:[
-  {urls:'stun:stun.l.google.com:19302'},
-  {urls:'stun:stun1.l.google.com:19302'},
-  {urls:'stun:stun2.l.google.com:19302'}
-]};
+// Context menu target
+let ctxTargetUid = null, ctxTargetName = null;
 
-// ══════════════════════════════════════════
-//  DEVICES
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   DEVICES
+═══════════════════════════ */
 async function loadDevices() {
   try {
-    const s = await navigator.mediaDevices.getUserMedia({audio:true});
-    s.getTracks().forEach(t => t.stop());
+    const tmp = await navigator.mediaDevices.getUserMedia({audio:true});
+    tmp.getTracks().forEach(t => t.stop());
     const devs = await navigator.mediaDevices.enumerateDevices();
-    const ins = devs.filter(d => d.kind==='audioinput');
-    const outs = devs.filter(d => d.kind==='audiooutput');
-    const inSel = document.getElementById('inDev');
-    const outSel = document.getElementById('outDev');
-    inSel.innerHTML = ins.map((d,i) => `<option value="${d.deviceId}">${d.label||'Micro '+(i+1)}</option>`).join('');
-    outSel.innerHTML = outs.map((d,i) => `<option value="${d.deviceId}">${d.label||'Sortie '+(i+1)}</option>`).join('');
-    inDevId = ins[0]?.deviceId;
+    const ins  = devs.filter(d => d.kind === 'audioinput');
+    const outs = devs.filter(d => d.kind === 'audiooutput');
+    const iS = document.getElementById('inDev');
+    const oS = document.getElementById('outDev');
+    iS.innerHTML = ins.map((d,i) => `<option value="${d.deviceId}">${d.label||'Micro '+(i+1)}</option>`).join('');
+    oS.innerHTML = outs.map((d,i) => `<option value="${d.deviceId}">${d.label||'Sortie '+(i+1)}</option>`).join('');
+    inDevId  = ins[0]?.deviceId;
     outDevId = outs[0]?.deviceId;
-    inSel.onchange = () => { inDevId = inSel.value; };
-    outSel.onchange = () => { outDevId = outSel.value; };
+    iS.onchange = () => { inDevId  = iS.value; };
+    oS.onchange = () => { outDevId = oS.value; };
     document.getElementById('sdMic').classList.add('ok');
     document.getElementById('sMic').textContent = 'Micro: Prêt';
   } catch(e) {
@@ -381,9 +369,9 @@ async function loadDevices() {
   }
 }
 
-// ══════════════════════════════════════════
-//  POSITION SELECTION
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   POSITION SELECTION
+═══════════════════════════ */
 function selectPos(btn) {
   if (connected) return;
   document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
@@ -398,16 +386,16 @@ function selectPos(btn) {
   document.getElementById('connBtn').disabled = false;
 }
 
-// ══════════════════════════════════════════
-//  CONNECT / DISCONNECT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   CONNECT / DISCONNECT
+═══════════════════════════ */
 async function toggleConn() {
-  if (connected) { await doDisconnect(); } else { await doConnect(); }
+  if (connected) await doDisconnect(); else await doConnect();
 }
 
 async function doConnect() {
-  callsign = (document.getElementById('callsignInput').value.trim().toUpperCase()) || ('KYKY_'+selPos);
-  inDevId = document.getElementById('inDev').value;
+  callsign = (document.getElementById('callsignInput').value.trim().toUpperCase()) || ('KYKY_' + selPos);
+  inDevId  = document.getElementById('inDev').value;
   outDevId = document.getElementById('outDev').value;
 
   try {
@@ -415,16 +403,16 @@ async function doConnect() {
       audio: { deviceId: inDevId ? {exact:inDevId} : undefined, echoCancellation:true, noiseSuppression:true },
       video: false
     });
-    localStream.getAudioTracks().forEach(t => t.enabled = false); // muted until PTT
+    // Start muted — only open on PTT
+    localStream.getAudioTracks().forEach(t => { t.enabled = false; });
   } catch(e) {
-    alert('Impossible d\'accéder au microphone:\n' + e.message);
+    alert('Microphone inaccessible:\n' + e.message);
     return;
   }
 
   connected = true;
   setConnectedUI(true);
-
-  const fk = freqKey(selFreq);
+  const fk = fKey(selFreq);
 
   // Controller presence
   const ctrlRef = db.ref('controllers/' + selPos);
@@ -432,104 +420,125 @@ async function doConnect() {
   ctrlRef.onDisconnect().remove();
   activeRefs.push(ctrlRef);
 
-  // Session member presence
+  // Session member
   const memRef = db.ref(`sessions/${fk}/members/${uid}`);
   await memRef.set({ name: callsign, position: selPos, type: 'controller', ts: Date.now() });
   memRef.onDisconnect().remove();
   activeRefs.push(memRef);
 
-  // Clear old signaling for us
+  // Clear stale signaling
   await db.ref(`signaling/${fk}/${uid}`).remove();
 
-  // ── Listen for signaling addressed to me
+  // Listen for signaling messages addressed to me
   const sigRef = db.ref(`signaling/${fk}/${uid}`);
   sigRef.on('child_added', async snap => {
-    const fromId = snap.key;
+    const pid = snap.key;
     const data = snap.val();
     if (!data) return;
-    if (data.offer && !peers[fromId]) await handleOffer(fromId, data.offer, fk);
-    if (data.answer && peers[fromId]) await handleAnswer(fromId, data.answer);
+    if (data.offer  && !peers[pid]) await handleOffer(pid, data.offer, fk);
+    if (data.answer &&  peers[pid]) await handleAnswer(pid, data.answer);
   });
   activeRefs.push(sigRef);
 
-  // ── Listen for members on our frequency
-  const allMemRef = db.ref(`sessions/${fk}/members`);
-  allMemRef.on('child_added', async snap => {
+  // Members list — connect to existing + watch for newcomers
+  const memListRef = db.ref(`sessions/${fk}/members`);
+  memListRef.on('value', snap => {
+    connectedMembers = {};
+    snap.forEach(s => { if (s.key !== uid) connectedMembers[s.key] = s.val(); });
+    buildUsrList();
+  });
+  memListRef.on('child_added', async snap => {
     const pid = snap.key;
-    if (pid === uid) return;
-    if (peers[pid]) return;
-    // larger UID initiates
-    if (uid > pid) await initiateConn(pid, fk);
+    if (pid === uid || peers[pid]) return;
+    if (uid > pid) await initiateConn(pid, fk);  // higher UID initiates
   });
-  allMemRef.on('child_removed', snap => {
-    killPeer(snap.key);
-  });
-  activeRefs.push(allMemRef);
+  memListRef.on('child_removed', snap => killPeer(snap.key));
+  activeRefs.push(memListRef);
 
-  // ── Transmit state
+  // Transmitting state
   const txRef = db.ref(`sessions/${fk}/transmitting`);
   txRef.on('value', snap => handleTX(snap.val()));
   activeRefs.push(txRef);
 
+  // Chat
+  const chatRef = db.ref(`sessions/${fk}/chat`).limitToLast(100);
+  chatRef.on('child_added', snap => appendMsg(snap.val()));
+  activeRefs.push(chatRef);
+
+  // Commands sent TO me by other controllers
+  const cmdRef = db.ref(`commands/${uid}`);
+  cmdRef.on('child_added', async snap => {
+    const cmd = snap.val(); if (!cmd) return;
+    await snap.ref.remove();
+    handleCommand(cmd);
+  });
+  activeRefs.push(cmdRef);
+
   document.getElementById('sConn').textContent = callsign + ' @ ' + selFreq;
   document.getElementById('sdConn').classList.add('ok');
   document.getElementById('pttBtn').disabled = false;
+  document.getElementById('chatIn').disabled = false;
+  document.getElementById('chatSend').disabled = false;
+  addSys('Connecté sur ' + selPos + ' (' + selFreq + ' MHz)');
 }
 
 async function doDisconnect() {
   stopPTT();
+  const fk = fKey(selFreq);
 
-  const fk = freqKey(selFreq);
-
-  // Clear Firebase presence + signaling
-  await db.ref(`sessions/${fk}/members/${uid}`).remove();
-  await db.ref(`controllers/${selPos}`).remove();
-  await db.ref(`signaling/${fk}/${uid}`).remove();
-
-  // Release TX if we held it
+  // Release TX lock if we hold it
   const txSnap = await db.ref(`sessions/${fk}/transmitting`).get();
   if (txSnap.val()?.uid === uid) await db.ref(`sessions/${fk}/transmitting`).remove();
+
+  await db.ref(`sessions/${fk}/members/${uid}`).remove();
+  await db.ref('controllers/' + selPos).remove();
+  await db.ref(`signaling/${fk}/${uid}`).remove();
 
   // Detach all listeners
   activeRefs.forEach(r => r.off && r.off());
   activeRefs = [];
 
-  // Close all peers
-  Object.keys(peers).forEach(id => killPeer(id));
+  // Close all peer connections
+  Object.keys(peers).forEach(killPeer);
 
-  // Stop media
-  if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+  // Stop microphone
+  localStream?.getTracks().forEach(t => t.stop());
+  localStream = null;
 
   connected = false;
+  connectedMembers = {};
   setConnectedUI(false);
   document.getElementById('sConn').textContent = 'Déconnecté';
   document.getElementById('sdConn').classList.remove('ok');
   document.getElementById('pttBtn').disabled = true;
+  document.getElementById('chatIn').disabled = true;
+  document.getElementById('chatSend').disabled = true;
+  buildUsrList();
 }
 
-// ══════════════════════════════════════════
-//  WebRTC
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   WebRTC
+═══════════════════════════ */
 async function initiateConn(pid, fk) {
   const pc = makePeer(pid, fk);
-  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  await db.ref(`signaling/${fk}/${pid}/${uid}`).set({ offer: {type: offer.type, sdp: offer.sdp} });
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).set({ offer: { type: offer.type, sdp: offer.sdp } });
 }
 
 async function handleOffer(pid, offer, fk) {
   const pc = makePeer(pid, fk);
-  localStream?.getTracks().forEach(t => pc.addTrack(t, localStream));
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   await pc.setRemoteDescription(new RTCSessionDescription(offer));
-  // flush queued candidates
-  for (const c of (candQueues[pid]||[])) {
-    try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+  // Flush queued ICE candidates
+  for (const c of (candQueues[pid] || [])) {
+    try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
   }
   delete candQueues[pid];
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-  await db.ref(`signaling/${fk}/${pid}/${uid}`).update({ answer: {type: answer.type, sdp: answer.sdp} });
+  await db.ref(`signaling/${fk}/${pid}/${uid}`).update({ answer: { type: answer.type, sdp: answer.sdp } });
 }
 
 async function handleAnswer(pid, answer) {
@@ -551,12 +560,13 @@ function makePeer(pid, fk) {
   pc.ontrack = e => {
     let a = audEls[pid];
     if (!a) {
-      a = new Audio(); audEls[pid] = a;
-      if (outDevId && a.setSinkId) a.setSinkId(outDevId).catch(()=>{});
+      a = document.createElement('audio');
+      a.autoplay = true;
+      audEls[pid] = a;
+      if (outDevId && a.setSinkId) a.setSinkId(outDevId).catch(() => {});
     }
     if (a.srcObject !== e.streams[0]) {
       a.srcObject = e.streams[0];
-      a.play().catch(()=>{});
     }
   };
 
@@ -564,18 +574,18 @@ function makePeer(pid, fk) {
     if (['disconnected','failed','closed'].includes(pc.iceConnectionState)) killPeer(pid);
   };
 
-  // Listen for candidates from peer
-  const candRef = db.ref(`signaling/${fk}/${uid}/${pid}/candidates`);
-  candRef.on('child_added', async snap => {
+  // Listen for ICE candidates addressed to me from this peer
+  const cRef = db.ref(`signaling/${fk}/${uid}/${pid}/candidates`);
+  cRef.on('child_added', async snap => {
     const c = snap.val();
     if (peers[pid]?.remoteDescription) {
-      try { await peers[pid].addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+      try { await peers[pid].addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
     } else {
       if (!candQueues[pid]) candQueues[pid] = [];
       candQueues[pid].push(c);
     }
   });
-  activeRefs.push(candRef);
+  activeRefs.push(cRef);
 
   return pc;
 }
@@ -583,83 +593,261 @@ function makePeer(pid, fk) {
 function killPeer(pid) {
   peers[pid]?.close();
   delete peers[pid];
-  if (audEls[pid]) { audEls[pid].pause(); audEls[pid].srcObject = null; delete audEls[pid]; }
+  if (audEls[pid]) {
+    audEls[pid].pause();
+    audEls[pid].srcObject = null;
+    delete audEls[pid];
+  }
   delete candQueues[pid];
 }
 
-// ══════════════════════════════════════════
-//  PTT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   PTT
+═══════════════════════════ */
 function startPTT() {
-  if (!connected || pttLocked || pttActive) return;
+  if (!connected || pttLocked || pttActive || !localStream) return;
   pttActive = true;
-  localStream?.getAudioTracks().forEach(t => t.enabled = true);
+  localStream.getAudioTracks().forEach(t => { t.enabled = true; });
   document.getElementById('pttBtn').classList.add('tx');
   document.getElementById('ledVous').classList.add('on');
-  const fk = freqKey(selFreq);
-  db.ref(`sessions/${fk}/transmitting`).set({ uid, name: callsign, pos: selPos, ts: Date.now() });
+  db.ref(`sessions/${fKey(selFreq)}/transmitting`).set({ uid, name: callsign, pos: selPos, ts: Date.now() });
 }
 
 function stopPTT() {
   if (!pttActive) return;
   pttActive = false;
-  localStream?.getAudioTracks().forEach(t => t.enabled = false);
+  localStream?.getAudioTracks().forEach(t => { t.enabled = false; });
   document.getElementById('pttBtn').classList.remove('tx');
   document.getElementById('ledVous').classList.remove('on');
   if (connected && selFreq) {
-    const fk = freqKey(selFreq);
-    db.ref(`sessions/${fk}/transmitting`).get().then(snap => {
-      if (snap.val()?.uid === uid) db.ref(`sessions/${fk}/transmitting`).remove();
+    const fk = fKey(selFreq);
+    db.ref(`sessions/${fk}/transmitting`).get().then(s => {
+      if (s.val()?.uid === uid) db.ref(`sessions/${fk}/transmitting`).remove();
     });
   }
 }
 
 function handleTX(data) {
-  const lExt = document.getElementById('ledExt');
-  const lVous = document.getElementById('ledVous');
-  const ptt = document.getElementById('pttBtn');
-  const banner = document.getElementById('txBanner');
-  const who = document.getElementById('extWho');
+  const lE = document.getElementById('ledExt');
+  const lV = document.getElementById('ledVous');
+  const pb = document.getElementById('pttBtn');
+  const bn = document.getElementById('txBanner');
+  const wh = document.getElementById('extWho');
 
   if (data && data.uid !== uid) {
-    lExt.classList.add('on');
-    who.textContent = data.name || '?';
+    // Someone else is transmitting
+    lE.classList.add('on');
+    wh.textContent = data.name || '?';
     pttLocked = true;
-    ptt.classList.add('locked');
-    banner.textContent = '● ' + (data.name || '?') + ' EN ÉMISSION';
-    banner.classList.add('show');
-    // force stop our own PTT if somehow active
+    pb.classList.add('locked');
+    bn.textContent = '● ' + (data.name || '?') + ' EN ÉMISSION';
+    bn.classList.add('show');
     if (pttActive) stopPTT();
   } else if (data && data.uid === uid) {
-    lVous.classList.add('on');
-    lExt.classList.remove('on');
-    who.textContent = '';
-    banner.classList.remove('show');
+    // We are transmitting
+    lV.classList.add('on');
+    lE.classList.remove('on');
+    wh.textContent = '';
+    bn.classList.remove('show');
   } else {
-    lExt.classList.remove('on');
-    lVous.classList.remove('on');
-    who.textContent = '';
+    // Channel clear
+    lE.classList.remove('on');
+    lV.classList.remove('on');
+    wh.textContent = '';
     pttLocked = false;
-    ptt.classList.remove('locked');
-    banner.classList.remove('show');
+    pb.classList.remove('locked');
+    bn.classList.remove('show');
   }
 }
 
-// ══════════════════════════════════════════
-//  UI UPDATES
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   CHAT
+═══════════════════════════ */
+function sendChat() {
+  const inp = document.getElementById('chatIn');
+  const txt = inp.value.trim();
+  if (!txt || !connected) return;
+  db.ref(`sessions/${fKey(selFreq)}/chat`).push({
+    uid, name: callsign, text: txt, type: 'controller', ts: Date.now()
+  });
+  inp.value = '';
+}
+
+function appendMsg(msg) {
+  if (!msg) return;
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const ts = fmtTime(msg.ts);
+  const isMe = msg.uid === uid;
+
+  if (msg.msgType === 'sys-red' || msg.msgType === 'sys-green') {
+    div.innerHTML = `<span class="msg-time">${ts}</span>`
+      + `<span class="msg-name ${msg.msgType==='sys-red'?'n-user':'n-ctrl'}">${esc(msg.name||'SYS')}</span>`
+      + `<span class="msg-text ${msg.msgType==='sys-red'?'t-red':'t-green'}">${esc(msg.text)}</span>`;
+  } else {
+    const nc = isMe ? 'n-me' : (msg.type === 'controller' ? 'n-ctrl' : 'n-user');
+    div.innerHTML = `<span class="msg-time">${ts}</span>`
+      + `<span class="msg-name ${nc}">${esc(msg.name||'?')}</span>`
+      + `<span class="msg-text">${esc(msg.text)}</span>`;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addSys(txt) {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg sys-line';
+  div.innerHTML = `<span class="msg-text">${esc(txt)}</span>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+/* ═══════════════════════════
+   COMMANDS (received by me)
+═══════════════════════════ */
+function handleCommand(cmd) {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const ts = fmtTime(Date.now());
+  if (cmd.type === 'forceact') {
+    playSound('forceact.mp3', 1.0, true);
+    div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-user">⚠ CONTRÔLE</span><span class="msg-text t-red">${esc(cmd.message)}</span>`;
+  } else if (cmd.type === 'transfer') {
+    playSound('notification.mp3', 0.9, false);
+    div.innerHTML = `<span class="msg-time">${ts}</span><span class="msg-name n-ctrl">↗ TRANSFERT</span><span class="msg-text t-green">${esc(cmd.message)}</span>`;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function playSound(file, vol, alarm) {
+  const a = new Audio(file);
+  a.volume = vol;
+  a.play().catch(() => {
+    try {
+      const ctx = new AudioContext();
+      if (alarm) {
+        [0, 0.28, 0.56].forEach(t => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.frequency.value = 880; g.gain.value = 0.35;
+          o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.18);
+        });
+        setTimeout(() => ctx.close(), 1500);
+      } else {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 660; g.gain.value = 0.25;
+        o.start(); o.stop(ctx.currentTime + 0.3);
+        setTimeout(() => ctx.close(), 600);
+      }
+    } catch(e) {}
+  });
+}
+
+/* ═══════════════════════════
+   CONTEXT MENU
+═══════════════════════════ */
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('click', closeCtx);
+
+function openCtx(e, pid, name) {
+  ctxTargetUid  = pid;
+  ctxTargetName = name;
+  document.getElementById('ctxTitle').textContent = '👤 ' + name;
+  // Build transfer submenu
+  const sub = document.getElementById('ctxSub');
+  sub.innerHTML = '';
+  sub.classList.remove('open');
+  const others = CTRL_DEFS.filter(d => d.pos !== selPos && onlineControllers[d.pos]);
+  if (!others.length) {
+    sub.innerHTML = '<div class="ctx-sub-item off">Aucune autre position en ligne</div>';
+  } else {
+    others.forEach(d => {
+      const c = onlineControllers[d.pos];
+      sub.innerHTML += `<div class="ctx-sub-item" onclick="doTransfer('${d.pos}','${d.freq}','${esc(c.callsign)}')">${esc(c.callsign)} — ${d.freq}</div>`;
+    });
+  }
+  const menu = document.getElementById('ctxMenu');
+  menu.style.display = 'block';
+  const x = Math.min(e.clientX, window.innerWidth  - 215);
+  const y = Math.min(e.clientY, window.innerHeight - 160);
+  menu.style.left = x + 'px';
+  menu.style.top  = y + 'px';
+  e.stopPropagation();
+}
+function closeCtx()  { document.getElementById('ctxMenu').style.display = 'none'; }
+function toggleSub() { document.getElementById('ctxSub').classList.toggle('open'); }
+
+function doForceACT() {
+  if (!ctxTargetUid) return;
+  const msg = FORCE_ACT_MSG[selPos] || 'GOOD DAY PLEASE CONTACT CONTROL';
+  db.ref(`commands/${ctxTargetUid}`).push({ type:'forceact', from:uid, fromPos:selPos, fromCallsign:callsign, message:msg, ts:Date.now() });
+  addSys('Force ACT envoyé à ' + ctxTargetName);
+  closeCtx();
+}
+
+function doTransfer(toPos, toFreq, toCallsign) {
+  if (!ctxTargetUid) return;
+  const msg = `Hello, switch to ${toCallsign} on ${toFreq}`;
+  db.ref(`commands/${ctxTargetUid}`).push({ type:'transfer', from:uid, fromPos:selPos, fromCallsign:callsign, toPos, toFreq, toCallsign, message:msg, ts:Date.now() });
+  addSys('Transfert vers ' + toCallsign + ' envoyé à ' + ctxTargetName);
+  closeCtx();
+}
+
+/* ═══════════════════════════
+   USERS ON FREQUENCY
+═══════════════════════════ */
+function buildUsrList() {
+  const list = document.getElementById('usrList');
+  if (!connected) { list.innerHTML = '<div class="no-users">Non connecté</div>'; return; }
+  const entries = Object.entries(connectedMembers);
+  if (!entries.length) { list.innerHTML = '<div class="no-users">Aucun utilisateur sur cette fréquence</div>'; return; }
+  list.innerHTML = entries.map(([pid, m]) =>
+    `<div class="usr-row" oncontextmenu="openCtx(event,'${pid}','${esc(m.name||pid)}')">
+      <div class="usr-dot"></div>
+      <div>
+        <div class="usr-name">${esc(m.name || pid)}</div>
+        <div class="usr-hint">${m.type === 'controller' ? 'Contrôleur' : 'Joueur'} · clic droit</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+/* ═══════════════════════════
+   ONLINE CONTROLLERS PANEL
+═══════════════════════════ */
+function updateOnlinePanel(data) {
+  onlineControllers = data || {};
+  CTRL_DEFS.forEach(d => {
+    const c   = onlineControllers[d.pos];
+    const on  = !!c;
+    const dot  = document.getElementById('dot-'  + d.pos);
+    const call = document.getElementById('call-' + d.pos);
+    const sub  = document.getElementById('sub-'  + d.pos);
+    if (dot)  dot.classList.toggle('on', on);
+    if (call) { call.textContent = on ? c.callsign : d.pos; call.className = 'pos-card-call' + (on ? ' on' : ''); }
+    if (sub)  sub.textContent = d.label + ' · ' + (on ? 'En ligne' : 'Hors ligne');
+  });
+}
+
+/* ═══════════════════════════
+   UI HELPERS
+═══════════════════════════ */
 function setConnectedUI(on) {
   const btn = document.getElementById('connBtn');
-  const inputs = ['callsignInput','inDev','outDev'];
   if (on) {
     btn.textContent = 'Se Déconnecter'; btn.classList.add('disc');
-    inputs.forEach(id => document.getElementById(id).disabled = true);
+    ['callsignInput','inDev','outDev'].forEach(id => document.getElementById(id).disabled = true);
     document.querySelectorAll('.pos-btn').forEach(b => b.style.pointerEvents = 'none');
   } else {
     btn.textContent = 'Se Connecter'; btn.classList.remove('disc');
-    inputs.forEach(id => document.getElementById(id).disabled = false);
+    ['callsignInput','inDev','outDev'].forEach(id => document.getElementById(id).disabled = false);
     document.querySelectorAll('.pos-btn').forEach(b => b.style.pointerEvents = '');
-    document.getElementById('lcdFreq').classList.add('off');
+    document.getElementById('lcdFreq').className = 'lcd-freq off';
     document.getElementById('lcdPos').textContent = '— NON CONNECTÉ —';
     document.getElementById('ledExt').classList.remove('on');
     document.getElementById('ledVous').classList.remove('on');
@@ -668,61 +856,36 @@ function setConnectedUI(on) {
   }
 }
 
-const CTRL_DEFS = [
-  {pos:'CTY', freq:'118.800', label:'City'},
-  {pos:'WLD', freq:'123.500', label:'World'},
-  {pos:'ARL', freq:'124.615', label:'Aerial'},
-];
+function fKey(f)    { return f.replace('.', '_'); }
+function fmtTime(ts){ if (!ts) return '--:--'; const t=new Date(ts); return t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0'); }
+function esc(s)     { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function buildOnlineList(data) {
-  const list = document.getElementById('onlineList');
-  const any = data && Object.values(data).some(v => v);
-  if (!any) { list.innerHTML = '<div class="no-ctrl">Aucun contrôleur connecté</div>'; return; }
-  list.innerHTML = CTRL_DEFS.map(def => {
-    const c = data?.[def.pos];
-    const on = !!c;
-    return `<div class="pos-row">
-      <div class="dot ${on?'on':''}"></div>
-      <div class="row-info">
-        <div class="row-call">${on ? c.callsign : def.pos}</div>
-        <div class="row-detail">${def.label} · ${on?'En ligne':'Hors ligne'}</div>
-      </div>
-      <div class="freq-badge">${def.freq}</div>
-    </div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════
-function freqKey(f) { return f.replace('.','_'); }
-
-// ══════════════════════════════════════════
-//  KEYBOARD PTT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   KEYBOARD PTT
+═══════════════════════════ */
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && !e.repeat && connected) { e.preventDefault(); startPTT(); }
+  if (e.code === 'Space' && !e.repeat && connected && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault(); startPTT();
+  }
 });
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space') { e.preventDefault(); stopPTT(); }
-});
+document.addEventListener('keyup', e => { if (e.code === 'Space') stopPTT(); });
 
-// ══════════════════════════════════════════
-//  UNLOAD CLEANUP
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   UNLOAD CLEANUP
+═══════════════════════════ */
 window.addEventListener('beforeunload', () => {
   if (!connected) return;
-  const fk = freqKey(selFreq);
+  const fk = fKey(selFreq);
   db.ref(`sessions/${fk}/members/${uid}`).remove();
-  db.ref(`signaling/${fk}/${uid}`).remove();
   db.ref('controllers/' + selPos).remove();
+  db.ref(`signaling/${fk}/${uid}`).remove();
 });
 
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
+/* ═══════════════════════════
+   INIT
+═══════════════════════════ */
 loadDevices();
-db.ref('controllers').on('value', snap => buildOnlineList(snap.val()));
+db.ref('controllers').on('value', snap => updateOnlinePanel(snap.val()));
 </script>
 </body>
 </html>
