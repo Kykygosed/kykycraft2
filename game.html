@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>MiniCraft</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#000;overflow:hidden;font-family:'Press Start 2P',monospace;touch-action:none;}
+#c{display:block;position:fixed;top:0;left:0;width:100%;height:100%;}
+
+/* ── UI OVERLAY ── */
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10;}
+
+/* Crosshair */
+#crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:rgba(255,255,255,0.9);box-shadow:0 0 3px rgba(0,0,0,0.8);}
+#crosshair::before{width:2px;height:100%;left:50%;transform:translateX(-50%);}
+#crosshair::after{height:2px;width:100%;top:50%;transform:translateY(-50%);}
+
+/* ── HOTBAR ── */
+#hotbar{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  display:flex;gap:4px;pointer-events:auto;z-index:20;
+  background:rgba(0,0,0,0.45);padding:5px;
+  border:2px solid rgba(255,255,255,0.2);
+  border-radius:4px;
+}
+.slot{
+  width:50px;height:50px;border:2px solid rgba(255,255,255,0.3);
+  border-top-color:rgba(255,255,255,0.6);border-left-color:rgba(255,255,255,0.6);
+  border-bottom-color:rgba(0,0,0,0.5);border-right-color:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:transform 0.08s,border-color 0.08s;
+  border-radius:2px;
+}
+.slot.active{
+  border-color:#fff !important;background:rgba(255,255,255,0.18);
+  transform:scale(1.14);box-shadow:0 0 8px rgba(255,255,255,0.4);
+}
+.slot-icon{width:30px;height:30px;border-radius:2px;margin-bottom:2px;image-rendering:pixelated;}
+.slot-label{font-size:4px;color:#ddd;text-shadow:1px 1px 0 #000;letter-spacing:0;}
+
+/* ── MINIMAP ── */
+#minimap-wrap{
+  position:fixed;top:14px;right:14px;z-index:20;
+  pointer-events:none;
+}
+#minimap{
+  width:110px;height:110px;
+  border:2px solid rgba(255,255,255,0.5);
+  box-shadow:0 2px 8px rgba(0,0,0,0.7);
+  image-rendering:pixelated;
+  display:block;
+}
+#minimap-label{
+  text-align:center;font-size:5px;color:#fff;
+  text-shadow:1px 1px 0 #000;margin-top:3px;
+}
+
+/* ── HUD TOP LEFT ── */
+#hud{
+  position:fixed;top:14px;left:14px;z-index:20;
+  color:#fff;font-size:6px;line-height:2;text-shadow:1px 1px 0 #000;
+  pointer-events:none;
+}
+
+/* ── BLOCK TOAST ── */
+#toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,60px);
+  background:rgba(0,0,0,0.6);color:#fff;padding:6px 12px;
+  font-size:7px;border:2px solid rgba(255,255,255,0.3);
+  pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:30;
+  border-radius:2px;
+}
+#toast.show{opacity:1;}
+
+/* ── TOUCH: JOYSTICK ── */
+#joy-base{
+  position:fixed;bottom:105px;left:35px;
+  width:112px;height:112px;border-radius:50%;
+  background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.22);
+  pointer-events:auto;touch-action:none;z-index:20;
+}
+#joy-knob{
+  position:absolute;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,0.45);border:2px solid rgba(255,255,255,0.75);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+/* ── TOUCH: LOOK AREA ── */
+#look-zone{
+  position:fixed;right:0;top:0;
+  width:50%;height:calc(100% - 110px);
+  pointer-events:auto;touch-action:none;z-index:15;
+}
+
+/* ── TOUCH: BUTTONS ── */
+#btns{
+  position:fixed;bottom:115px;right:28px;
+  display:flex;flex-direction:column;gap:10px;
+  pointer-events:auto;z-index:20;
+}
+.abtn{
+  width:62px;height:62px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;cursor:pointer;border:none;outline:none;
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);
+  -webkit-user-select:none;user-select:none;
+  transition:transform 0.08s;
+}
+.abtn:active{transform:scale(0.9);}
+#btn-break{background:radial-gradient(circle at 40% 35%,#e74c3c,#922b21);}
+#btn-place{background:radial-gradient(circle at 40% 35%,#2ecc71,#1a6b3a);}
+#btn-jump{
+  position:fixed;bottom:120px;
+  left:calc(35px + 56px + 18px);
+  width:58px;height:58px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#3498db,#1a5276);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);
+  cursor:pointer;border:none;outline:none;
+  -webkit-user-select:none;user-select:none;
+  pointer-events:auto;z-index:20;
+  transition:transform 0.08s;
+}
+#btn-jump:active{transform:scale(0.9);}
+
+/* ── START SCREEN ── */
+#start{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(180deg,#1a3a5c 0%,#2980b9 30%,#27ae60 60%,#8B6914 75%,#5d3e12 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:100;
+}
+#start h1{
+  font-size:clamp(20px,6vw,44px);color:#fff;
+  text-shadow:4px 4px 0 #000,-2px -2px 0 rgba(0,0,0,0.5);
+  margin-bottom:8px;letter-spacing:2px;
+}
+#start .sub{
+  font-size:clamp(6px,1.8vw,11px);color:#ffe066;
+  text-shadow:2px 2px 0 #000;margin-bottom:10px;text-align:center;
+}
+#seed-wrap{
+  display:flex;align-items:center;gap:8px;margin-bottom:28px;
+}
+#seed-wrap label{font-size:7px;color:#ccc;}
+#seed-input{
+  font-family:'Press Start 2P',monospace;font-size:8px;
+  padding:6px 10px;background:rgba(0,0,0,0.5);color:#fff;
+  border:2px solid rgba(255,255,255,0.4);width:130px;
+  outline:none;border-radius:2px;
+}
+#play-btn{
+  font-family:'Press Start 2P',monospace;font-size:clamp(10px,2.5vw,15px);
+  padding:14px 30px;background:#27ae60;color:#fff;
+  border:4px solid #fff;border-bottom-color:#1a6b3a;border-right-color:#1a6b3a;
+  cursor:pointer;text-shadow:2px 2px 0 #000;
+  box-shadow:4px 4px 0 #000;
+  transition:transform 0.1s;
+}
+#play-btn:active{transform:scale(0.94);}
+.ctrl-hint{font-size:5px;color:rgba(255,255,255,0.6);text-align:center;margin-top:16px;line-height:2;}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start">
+  <h1>🌿 MiniCraft</h1>
+  <p class="sub">Explore et construis ton monde procédural</p>
+  <div id="seed-wrap">
+    <label>GRAINE :</label>
+    <input id="seed-input" type="text" placeholder="aléatoire" maxlength="16">
+  </div>
+  <button id="play-btn">▶  JOUER</button>
+  <p class="ctrl-hint">
+    Joystick gauche = marcher · Zone droite = regarder<br>
+    ⬆ Sauter · ⛏ Casser · 🧱 Poser · Hotbar = choisir bloc
+  </p>
+</div>
+
+<!-- CANVAS -->
+<canvas id="c"></canvas>
+
+<!-- UI -->
+<div id="ui">
+  <div id="crosshair"></div>
+  <div id="toast"></div>
+</div>
+
+<!-- HOTBAR -->
+<div id="hotbar"></div>
+
+<!-- MINIMAP -->
+<div id="minimap-wrap">
+  <canvas id="minimap"></canvas>
+  <div id="minimap-label">CARTE</div>
+</div>
+
+<!-- HUD -->
+<div id="hud"></div>
+
+<!-- TOUCH CONTROLS -->
+<div id="joy-base"><div id="joy-knob"></div></div>
+<div id="look-zone"></div>
+<div id="btns">
+  <button class="abtn" id="btn-break">⛏</button>
+  <button class="abtn" id="btn-place">🧱</button>
+</div>
+<button id="btn-jump">⬆</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════
+//  BLOCK DEFINITIONS
+// ════════════════════════════════════════════════════════
+const BTYPE = {AIR:0,GRASS:1,DIRT:2,STONE:3,WOOD:4,LEAVES:5,SAND:6,SNOW:7,BRICK:8,WATER:9,GRAVEL:10};
+
+const BDEF = {
+  1:{n:'Herbe',   top:[88,168,50],   side:[118,82,50],   bot:[118,82,50],   map:[88,168,50]},
+  2:{n:'Terre',   top:[118,82,50],   side:[118,82,50],   bot:[118,82,50],   map:[118,82,50]},
+  3:{n:'Pierre',  top:[120,120,120], side:[120,120,120], bot:[120,120,120], map:[120,120,120]},
+  4:{n:'Bois',    top:[100,72,28],   side:[100,72,28],   bot:[100,72,28],   map:[100,72,28]},
+  5:{n:'Feuilles',top:[50,115,30],   side:[50,115,30],   bot:[50,115,30],   map:[50,115,30],  alpha:0.85},
+  6:{n:'Sable',   top:[215,200,90],  side:[215,200,90],  bot:[215,200,90],  map:[215,200,90]},
+  7:{n:'Neige',   top:[230,240,255], side:[200,210,230], bot:[200,210,230], map:[230,240,255]},
+  8:{n:'Brique',  top:[170,72,52],   side:[170,72,52],   bot:[170,72,52],   map:[170,72,52]},
+  9:{n:'Eau',     top:[50,110,200],  side:[50,110,200],  bot:[50,110,200],  map:[50,110,200],  alpha:0.65, noplace:true},
+ 10:{n:'Gravier', top:[150,140,130], side:[150,140,130], bot:[150,140,130], map:[150,140,130]},
+};
+
+const HOTBAR_BLOCKS = [1,2,3,4,5,6,7,8]; // selectable blocks (no water)
+
+// ════════════════════════════════════════════════════════
+//  WORLD
+// ════════════════════════════════════════════════════════
+const W=64, H=48, D=64;
+const SEA_LEVEL = 10;
+const world = new Uint8Array(W*H*D);
+
+function idx(x,y,z){return x+W*(y+H*z);}
+function getB(x,y,z){
+  if(x<0||x>=W||y<0||y>=H||z<0||z>=D) return (y<0)?3:0;
+  return world[idx(x,y,z)];
+}
+function setB(x,y,z,t){
+  if(x<0||x>=W||y<0||y>=H||z<0||z>=D)return;
+  world[idx(x,y,z)]=t;
+}
+function isSolid(b){return b>0 && !BDEF[b]?.alpha;}
+function isTransp(b){return b>0 && !!BDEF[b]?.alpha;}
+
+// ════════════════════════════════════════════════════════
+//  NOISE (seeded)
+// ════════════════════════════════════════════════════════
+let SEED=0;
+function setSeed(s){SEED=s;}
+function hash(x,z){
+  let n=(x*73856093^z*19349663^SEED*2654435761)>>>0;
+  n=(n^(n>>>16))*0x45d9f3b; n=(n^(n>>>16))*0x45d9f3b; n=n^(n>>>16);
+  return (n>>>0)/4294967296;
+}
+function lerp(a,b,t){return a+t*(b-a);}
+function fade(t){return t*t*t*(t*(t*6-15)+10);}
+function noise2(x,z){
+  const ix=Math.floor(x),iz=Math.floor(z);
+  const fx=x-ix,fz=z-iz;
+  const ux=fade(fx),uz=fade(fz);
+  return lerp(
+    lerp(hash(ix,iz),hash(ix+1,iz),ux),
+    lerp(hash(ix,iz+1),hash(ix+1,iz+1),ux),
+    uz
+  );
+}
+function fbm(x,z,oct,lac,gain){
+  let v=0,amp=1,freq=1,max=0;
+  for(let i=0;i<oct;i++){v+=noise2(x*freq,z*freq)*amp;max+=amp;amp*=gain;freq*=lac;}
+  return v/max;
+}
+
+// ════════════════════════════════════════════════════════
+//  WORLD GENERATION
+// ════════════════════════════════════════════════════════
+function generateWorld(){
+  world.fill(0);
+
+  // Height map
+  const hmap=new Float32Array(W*D);
+  for(let z=0;z<D;z++) for(let x=0;x<W;x++){
+    const cx=x/W, cz=z/D;
+    // continent mask: fade at edges
+    const edgeX=Math.min(cx,1-cx)*2, edgeZ=Math.min(cz,1-cz)*2;
+    const mask=Math.pow(Math.min(edgeX,edgeZ),0.6);
+    // base terrain
+    const base = fbm(cx*3+SEED*0.001, cz*3, 5, 2.1, 0.55);
+    // mountain ridge
+    const ridge = Math.pow(Math.abs(fbm(cx*4+10,cz*4,4,2.0,0.5)*2-1),0.5);
+    const mtn   = fbm(cx*2+5,cz*2+5,3,2.2,0.5);
+    const h = (base*0.55 + ridge*mtn*0.45)*mask;
+    hmap[x+W*z] = h;
+  }
+
+  // Normalize
+  let minH=1,maxH=0;
+  for(let i=0;i<W*D;i++){minH=Math.min(minH,hmap[i]);maxH=Math.max(maxH,hmap[i]);}
+  for(let i=0;i<W*D;i++) hmap[i]=(hmap[i]-minH)/(maxH-minH);
+
+  const terrainY=new Int32Array(W*D);
+  for(let i=0;i<W*D;i++) terrainY[i]=Math.floor(hmap[i]*26)+4;
+
+  // Fill world
+  for(let z=0;z<D;z++) for(let x=0;x<W;x++){
+    const surfY = terrainY[x+W*z];
+    const isOcean = surfY < SEA_LEVEL;
+    const isMtn   = surfY > 22;
+    const isBeach = surfY===SEA_LEVEL || surfY===SEA_LEVEL+1;
+
+    for(let y=0;y<H;y++){
+      if(y===0){ setB(x,y,z,3); continue; }
+      if(y>surfY){
+        if(y<=SEA_LEVEL) setB(x,y,z,9); // water
+        continue;
+      }
+      if(y===surfY){
+        if(isOcean)     setB(x,y,z,10); // gravel seabed
+        else if(isBeach)setB(x,y,z,6);  // sand beach
+        else if(isMtn && y>25)  setB(x,y,z,7);  // snow cap
+        else if(isMtn && y>20)  setB(x,y,z,3);  // stone peak
+        else            setB(x,y,z,1);  // grass
+      } else if(y>surfY-4){
+        if(isOcean||isBeach) setB(x,y,z,6); // sand
+        else if(isMtn && y>18) setB(x,y,z,3);
+        else setB(x,y,z,2); // dirt
+      } else {
+        setB(x,y,z,3); // stone
+      }
+    }
+  }
+
+  // Trees (avoid beaches, oceans, mountains)
+  const treeCount=40;
+  for(let t=0;t<treeCount;t++){
+    const tx=3+Math.floor(hash(t*3,1)*58);
+    const tz=3+Math.floor(hash(1,t*3)*58);
+    const surfY=terrainY[tx+W*tz];
+    if(surfY<SEA_LEVEL+2||surfY>21) continue;
+    if(getB(tx,surfY,tz)!==1) continue;
+    const trH=4+Math.floor(hash(t,t*2)*3);
+    // trunk
+    for(let y=surfY+1;y<=surfY+trH;y++) setB(tx,y,tz,4);
+    // leaves
+    for(let lx=-2;lx<=2;lx++) for(let lz=-2;lz<=2;lz++) for(let ly=0;ly<=3;ly++){
+      const d=Math.abs(lx)+Math.abs(lz)+Math.abs(ly*0.7);
+      if(d<3.2) setB(tx+lx,surfY+trH+ly,tz+lz,5);
+    }
+    setB(tx,surfY+trH+3,tz,5);
+  }
+
+  return terrainY;
+}
+
+// ════════════════════════════════════════════════════════
+//  THREE.JS
+// ════════════════════════════════════════════════════════
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('c'),
+  antialias: false,
+  powerPreference: 'high-performance'
+});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x87CEEB);
+renderer.shadowMap.enabled=false;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x87CEEB, 28, 56);
+
+const camera = new THREE.PerspectiveCamera(72, window.innerWidth/window.innerHeight, 0.05, 70);
+camera.rotation.order='YXZ';
+
+// Lighting
+scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+const sun=new THREE.DirectionalLight(0xfff8dd,0.95);
+sun.position.set(1,2,0.5);
+scene.add(sun);
+
+// Resize
+window.addEventListener('resize',()=>{
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// ════════════════════════════════════════════════════════
+//  MESH BUILD
+// ════════════════════════════════════════════════════════
+const FACE_DEFS=[
+  {dir:[0,1,0], verts:[[0,1,0],[0,1,1],[1,1,1],[1,1,0]], part:'top',  shade:1.0},
+  {dir:[0,-1,0],verts:[[0,0,1],[0,0,0],[1,0,0],[1,0,1]], part:'bot',  shade:0.52},
+  {dir:[1,0,0], verts:[[1,0,0],[1,1,0],[1,1,1],[1,0,1]], part:'side', shade:0.80},
+  {dir:[-1,0,0],verts:[[0,0,1],[0,1,1],[0,1,0],[0,0,0]], part:'side', shade:0.80},
+  {dir:[0,0,1], verts:[[1,0,1],[1,1,1],[0,1,1],[0,0,1]], part:'side', shade:0.70},
+  {dir:[0,0,-1],verts:[[0,0,0],[0,1,0],[1,1,0],[1,0,0]], part:'side', shade:0.70},
+];
+
+let solidMesh=null, transpMesh=null;
+
+function buildMesh(){
+  const sPos=[],sCol=[],sNrm=[],sIdx=[];
+  const tPos=[],tCol=[],tNrm=[],tIdx=[];
+  let sv=0,tv=0;
+
+  for(let z=0;z<D;z++) for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+    const b=getB(x,y,z);
+    if(!b) continue;
+    const bd=BDEF[b]; if(!bd) continue;
+    const isT=!!bd.alpha;
+
+    FACE_DEFS.forEach(({dir:[nx,ny,nz],verts,shade})=>{
+      const nb=getB(x+nx,y+ny,z+nz);
+      // Cull if neighbor is fully solid (or same water-water)
+      if(nb===b) return; // same type (water next to water hidden)
+      if(!isT && isSolid(nb)) return;
+      if(isT && isSolid(nb)) return;
+
+      const colArr = ny>0 ? bd.top : (ny<0 ? bd.bot : bd.side);
+      const r=colArr[0]/255*shade, g=colArr[1]/255*shade, bl=colArr[2]/255*shade;
+      const a=bd.alpha||1.0;
+
+      const P=isT?tPos:sPos, C=isT?tCol:sCol, N=isT?tNrm:sNrm, I=isT?tIdx:sIdx;
+      const vi=isT?tv:sv;
+
+      verts.forEach(([cx,cy,cz])=>{P.push(x+cx,y+cy,z+cz);C.push(r,g,bl,a);N.push(nx,ny,nz);});
+      I.push(vi,vi+1,vi+2, vi,vi+2,vi+3);
+      if(isT)tv+=4;else sv+=4;
+    });
+  }
+
+  if(solidMesh){scene.remove(solidMesh);solidMesh.geometry.dispose();solidMesh.material.dispose();}
+  if(transpMesh){scene.remove(transpMesh);transpMesh.geometry.dispose();transpMesh.material.dispose();}
+
+  if(sPos.length){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(sPos,3));
+    g.setAttribute('color',   new THREE.Float32BufferAttribute(sCol,4));
+    g.setAttribute('normal',  new THREE.Float32BufferAttribute(sNrm,3));
+    g.setIndex(sIdx);
+    solidMesh=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));
+    scene.add(solidMesh);
+  }
+
+  if(tPos.length){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(tPos,3));
+    g.setAttribute('color',   new THREE.Float32BufferAttribute(tCol,4));
+    g.setAttribute('normal',  new THREE.Float32BufferAttribute(tNrm,3));
+    g.setIndex(tIdx);
+    transpMesh=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,transparent:true,opacity:0.72,depthWrite:false,side:THREE.FrontSide}));
+    scene.add(transpMesh);
+  }
+}
+
+let rebuildPending=false, rebuildTimer=null;
+function scheduleBuild(){
+  clearTimeout(rebuildTimer);
+  rebuildTimer=setTimeout(()=>{buildMesh();rebuildPending=false;},60);
+}
+
+// ════════════════════════════════════════════════════════
+//  SELECTION BOX
+// ════════════════════════════════════════════════════════
+const selBox=new THREE.Mesh(
+  new THREE.BoxGeometry(1.01,1.01,1.01),
+  new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.55})
+);
+selBox.visible=false;
+scene.add(selBox);
+
+// ════════════════════════════════════════════════════════
+//  RAYCASTING (DDA)
+// ════════════════════════════════════════════════════════
+const REACH=5.0;
+let targetBlock=null, targetFace=null;
+
+function dda(){
+  const r=new THREE.Ray();
+  r.origin.copy(camera.position);
+  r.direction.set(0,0,-1).applyQuaternion(camera.quaternion).normalize();
+
+  let ix=Math.floor(r.origin.x),iy=Math.floor(r.origin.y),iz=Math.floor(r.origin.z);
+  const dx=r.direction.x,dy=r.direction.y,dz=r.direction.z;
+  const sx=dx>=0?1:-1,sy=dy>=0?1:-1,sz=dz>=0?1:-1;
+  const txD=Math.abs(dx)<1e-8?1e30:Math.abs(1/dx);
+  const tyD=Math.abs(dy)<1e-8?1e30:Math.abs(1/dy);
+  const tzD=Math.abs(dz)<1e-8?1e30:Math.abs(1/dz);
+  let txM=dx>=0?(ix+1-r.origin.x)*txD:(r.origin.x-ix)*txD;
+  let tyM=dy>=0?(iy+1-r.origin.y)*tyD:(r.origin.y-iy)*tyD;
+  let tzM=dz>=0?(iz+1-r.origin.z)*tzD:(r.origin.z-iz)*tzD;
+  let fn=[0,0,0];
+  let dist=0;
+
+  for(let i=0;i<96;i++){
+    const b=getB(ix,iy,iz);
+    if(b>0 && b!==9){ // ignore water for targeting
+      targetBlock=[ix,iy,iz];
+      targetFace=[...fn];
+      selBox.position.set(ix+0.5,iy+0.5,iz+0.5);
+      selBox.visible=true;
+      return;
+    }
+    if(txM<tyM&&txM<tzM){
+      dist=txM;if(dist>REACH)break;
+      ix+=sx;fn=[-sx,0,0];txM+=txD;
+    }else if(tyM<tzM){
+      dist=tyM;if(dist>REACH)break;
+      iy+=sy;fn=[0,-sy,0];tyM+=tyD;
+    }else{
+      dist=tzM;if(dist>REACH)break;
+      iz+=sz;fn=[0,0,-sz];tzM+=tzD;
+    }
+  }
+  targetBlock=null;targetFace=null;selBox.visible=false;
+}
+
+// ════════════════════════════════════════════════════════
+//  PLAYER PHYSICS
+// ════════════════════════════════════════════════════════
+const GRAVITY=-0.017, JUMP_V=0.22, MOVE_SPD=0.085, FRICTION=0.80;
+let velY=0, onGround=false, yaw=0, pitch=0;
+const fwd=new THREE.Vector3(), rgt=new THREE.Vector3();
+
+function collideY(px,py,pz){
+  const w=0.28;
+  for(let bx=Math.floor(px-w);bx<=Math.floor(px+w);bx++)
+    for(let bz=Math.floor(pz-w);bz<=Math.floor(pz+w);bz++)
+      for(let by=Math.floor(py-1.78);by<=Math.floor(py+0.15);by++)
+        if(isSolid(getB(bx,by,bz))) return true;
+  return false;
+}
+function collideH(px,py,pz){
+  const w=0.3;
+  for(let bx=Math.floor(px-w);bx<=Math.floor(px+w);bx++)
+    for(let bz=Math.floor(pz-w);bz<=Math.floor(pz+w);bz++)
+      for(let by=Math.floor(py-1.75);by<=Math.floor(py+0.1);by++)
+        if(isSolid(getB(bx,by,bz))) return true;
+  return false;
+}
+
+function physicsStep(){
+  velY+=GRAVITY;
+
+  // Joystick input → horizontal move
+  fwd.set(-Math.sin(yaw),0,-Math.cos(yaw));
+  rgt.set( Math.cos(yaw),0,-Math.sin(yaw));
+
+  let mx=(-joyX*rgt.x - joyY*fwd.x)*MOVE_SPD;
+  let mz=(-joyX*rgt.z - joyY*fwd.z)*MOVE_SPD;
+
+  // Keyboard (desktop)
+  if(keys['KeyW']||keys['ArrowUp'])    {mx+=fwd.x*MOVE_SPD;mz+=fwd.z*MOVE_SPD;}
+  if(keys['KeyS']||keys['ArrowDown'])  {mx-=fwd.x*MOVE_SPD;mz-=fwd.z*MOVE_SPD;}
+  if(keys['KeyA']||keys['ArrowLeft'])  {mx-=rgt.x*MOVE_SPD;mz-=rgt.z*MOVE_SPD;}
+  if(keys['KeyD']||keys['ArrowRight']) {mx+=rgt.x*MOVE_SPD;mz+=rgt.z*MOVE_SPD;}
+
+  const cp=camera.position;
+  let nx=cp.x+mx, ny=cp.y+velY, nz=cp.z+mz;
+
+  // X
+  if(collideH(nx,cp.y,cp.z)) nx=cp.x;
+  // Z
+  if(collideH(nx,cp.y,nz)) nz=cp.z;
+  // Y
+  if(collideY(nx,ny,nz)){
+    if(velY<0) onGround=true;
+    velY=0; ny=cp.y;
+  } else { onGround=false; }
+
+  nx=Math.max(0.5,Math.min(W-0.5,nx));
+  nz=Math.max(0.5,Math.min(D-0.5,nz));
+  if(ny<-5) respawn();
+  else camera.position.set(nx,ny,nz);
+}
+
+function respawn(){
+  const cx=Math.floor(W/2), cz=Math.floor(D/2);
+  let sy=H-1;
+  while(sy>0 && !isSolid(getB(cx,sy,cz))) sy--;
+  camera.position.set(cx+0.5, sy+2.2, cz+0.5);
+  velY=0; yaw=0; pitch=0;
+}
+
+// ════════════════════════════════════════════════════════
+//  INPUT
+// ════════════════════════════════════════════════════════
+let joyX=0, joyY=0, joyId=null;
+const joyBase=document.getElementById('joy-base');
+const joyKnob=document.getElementById('joy-knob');
+const R_JOY=42;
+
+function joyMove(t){
+  const rect=joyBase.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  let dx=t.clientX-cx, dy=t.clientY-cy;
+  const len=Math.hypot(dx,dy);
+  if(len>R_JOY){dx=dx/len*R_JOY;dy=dy/len*R_JOY;}
+  joyX=dx/R_JOY; joyY=dy/R_JOY; // NOTE: joyY positive = finger down = move backward (inverted in physicsStep)
+  joyKnob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+}
+
+joyBase.addEventListener('touchstart',e=>{e.preventDefault();joyId=e.changedTouches[0].identifier;joyMove(e.changedTouches[0]);},{passive:false});
+joyBase.addEventListener('touchmove', e=>{e.preventDefault();for(const t of e.changedTouches)if(t.identifier===joyId)joyMove(t);},{passive:false});
+joyBase.addEventListener('touchend',  e=>{e.preventDefault();joyX=0;joyY=0;joyKnob.style.transform='translate(-50%,-50%)';joyId=null;},{passive:false});
+
+let lookId=null,lookLX=0,lookLY=0;
+const lookZone=document.getElementById('look-zone');
+lookZone.addEventListener('touchstart',e=>{e.preventDefault();if(lookId===null){const t=e.changedTouches[0];lookId=t.identifier;lookLX=t.clientX;lookLY=t.clientY;}},{passive:false});
+lookZone.addEventListener('touchmove', e=>{
+  e.preventDefault();
+  for(const t of e.changedTouches){
+    if(t.identifier!==lookId)continue;
+    yaw  -=(t.clientX-lookLX)*0.0038;
+    pitch-=(t.clientY-lookLY)*0.0038;
+    pitch=Math.max(-Math.PI/2+0.04,Math.min(Math.PI/2-0.04,pitch));
+    lookLX=t.clientX;lookLY=t.clientY;
+  }
+},{passive:false});
+lookZone.addEventListener('touchend',e=>{e.preventDefault();for(const t of e.changedTouches)if(t.identifier===lookId)lookId=null;},{passive:false});
+
+const keys={};
+document.addEventListener('keydown',e=>{keys[e.code]=true;const n=parseInt(e.key);if(n>=1&&n<=8)selectSlot(n-1);if(e.code==='Space'&&onGround){velY=JUMP_V;onGround=false;}});
+document.addEventListener('keyup',  e=>keys[e.code]=false);
+document.addEventListener('wheel',  e=>{
+  let i=HOTBAR_BLOCKS.indexOf(selectedBlock);
+  i=(i+(e.deltaY>0?1:-1)+HOTBAR_BLOCKS.length)%HOTBAR_BLOCKS.length;
+  selectSlot(i);
+});
+
+// Pointer lock (desktop)
+document.getElementById('c').addEventListener('click',()=>document.getElementById('c').requestPointerLock&&document.getElementById('c').requestPointerLock());
+document.addEventListener('pointerlockchange',()=>{});
+document.addEventListener('mousemove',e=>{
+  if(!document.pointerLockElement)return;
+  yaw  -=e.movementX*0.002;
+  pitch-=e.movementY*0.002;
+  pitch=Math.max(-Math.PI/2+0.04,Math.min(Math.PI/2-0.04,pitch));
+});
+document.getElementById('c').addEventListener('mousedown',e=>{
+  if(!document.pointerLockElement)return;
+  if(e.button===0)doBreak();
+  if(e.button===2)doPlace();
+});
+document.getElementById('c').addEventListener('contextmenu',e=>e.preventDefault());
+
+document.getElementById('btn-break').addEventListener('touchstart',e=>{e.preventDefault();doBreak();},{passive:false});
+document.getElementById('btn-place').addEventListener('touchstart',e=>{e.preventDefault();doPlace();},{passive:false});
+document.getElementById('btn-jump') .addEventListener('touchstart',e=>{e.preventDefault();if(onGround){velY=JUMP_V;onGround=false;}},{passive:false});
+
+document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+
+// ════════════════════════════════════════════════════════
+//  BLOCK ACTIONS
+// ════════════════════════════════════════════════════════
+let selectedBlock=HOTBAR_BLOCKS[0];
+
+function doBreak(){
+  if(!targetBlock)return;
+  setB(...targetBlock,0);
+  scheduleBuild();
+  updateMinimap();
+}
+function doPlace(){
+  if(!targetBlock||!targetFace)return;
+  const px=targetBlock[0]+targetFace[0];
+  const py=targetBlock[1]+targetFace[1];
+  const pz=targetBlock[2]+targetFace[2];
+  if(px<0||px>=W||py<0||py>=H||pz<0||pz>=D)return;
+  // Check if block would overlap player
+  const cp=camera.position;
+  if(Math.abs(px+0.5-cp.x)<0.45&&Math.abs(pz+0.5-cp.z)<0.45&&
+     py+1>cp.y-1.8&&py<cp.y+0.3) return;
+  setB(px,py,pz,selectedBlock);
+  scheduleBuild();
+  updateMinimap();
+}
+
+// ════════════════════════════════════════════════════════
+//  HOTBAR UI
+// ════════════════════════════════════════════════════════
+function buildHotbar(){
+  const hb=document.getElementById('hotbar');
+  hb.innerHTML='';
+  HOTBAR_BLOCKS.forEach((btype,i)=>{
+    const bd=BDEF[btype];
+    const slot=document.createElement('div');
+    slot.className='slot'+(btype===selectedBlock?' active':'');
+    slot.dataset.idx=i;
+    slot.addEventListener('click',()=>selectSlot(i));
+
+    const ic=document.createElement('canvas');
+    ic.className='slot-icon';ic.width=30;ic.height=30;
+    drawBlockIcon(ic,btype);
+
+    const lbl=document.createElement('div');
+    lbl.className='slot-label';
+    lbl.textContent=bd.n.substring(0,5).toUpperCase();
+
+    slot.appendChild(ic);slot.appendChild(lbl);
+    hb.appendChild(slot);
+  });
+}
+
+function drawBlockIcon(canvas,btype){
+  const bd=BDEF[btype];
+  const ctx=canvas.getContext('2d');
+  const S=30;
+  ctx.clearRect(0,0,S,S);
+  // top
+  ctx.fillStyle=`rgb(${bd.top.join(',')})`;
+  ctx.beginPath();ctx.moveTo(S/2,3);ctx.lineTo(S-3,S*0.32);ctx.lineTo(S/2,S*0.52);ctx.lineTo(3,S*0.32);ctx.closePath();ctx.fill();
+  // left
+  const sl=bd.side.map(v=>Math.floor(v*0.68));
+  ctx.fillStyle=`rgb(${sl.join(',')})`;
+  ctx.beginPath();ctx.moveTo(3,S*0.32);ctx.lineTo(S/2,S*0.52);ctx.lineTo(S/2,S-3);ctx.lineTo(3,S*0.68);ctx.closePath();ctx.fill();
+  // right
+  const sr=bd.side.map(v=>Math.floor(v*0.85));
+  ctx.fillStyle=`rgb(${sr.join(',')})`;
+  ctx.beginPath();ctx.moveTo(S/2,S*0.52);ctx.lineTo(S-3,S*0.32);ctx.lineTo(S-3,S*0.68);ctx.lineTo(S/2,S-3);ctx.closePath();ctx.fill();
+}
+
+function selectSlot(i){
+  selectedBlock=HOTBAR_BLOCKS[i];
+  document.querySelectorAll('.slot').forEach((s,j)=>s.classList.toggle('active',j===i));
+  showToast(BDEF[selectedBlock].n);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1400);
+}
+
+// ════════════════════════════════════════════════════════
+//  MINIMAP
+// ════════════════════════════════════════════════════════
+const minimapCanvas=document.getElementById('minimap');
+minimapCanvas.width=W;minimapCanvas.height=D;
+const mmCtx=minimapCanvas.getContext('2d');
+
+function updateMinimap(){
+  const img=mmCtx.createImageData(W,D);
+  for(let z=0;z<D;z++) for(let x=0;x<W;x++){
+    // find topmost non-air block
+    let surf=0;
+    for(let y=H-1;y>=0;y--){
+      const b=getB(x,y,z);
+      if(b>0){surf=b;break;}
+    }
+    const col=BDEF[surf]?.map||[50,50,50];
+    const pi=(x+z*W)*4;
+    img.data[pi+0]=col[0];img.data[pi+1]=col[1];img.data[pi+2]=col[2];img.data[pi+3]=255;
+  }
+  mmCtx.putImageData(img,0,0);
+}
+
+function drawMinimapPlayer(){
+  // Overlay player dot + direction arrow on a temp canvas copy
+  // We redraw the full minimap each frame would be slow, so we just draw on top
+  const px=camera.position.x, pz=camera.position.z;
+  const sx=Math.round(px/W*W), sz=Math.round(pz/D*D);
+  // Draw player dot
+  mmCtx.fillStyle='rgba(255,50,50,1)';
+  mmCtx.fillRect(sx-1,sz-1,3,3);
+  // Arrow showing yaw
+  mmCtx.strokeStyle='#fff';mmCtx.lineWidth=1.5;
+  mmCtx.beginPath();
+  mmCtx.moveTo(sx,sz);
+  mmCtx.lineTo(sx+Math.sin(-yaw)*5, sz-Math.cos(-yaw)*5);
+  mmCtx.stroke();
+}
+
+let minimapDirty=true;
+let lastMMFrame=0;
+
+// ════════════════════════════════════════════════════════
+//  HUD
+// ════════════════════════════════════════════════════════
+function updateHUD(){
+  const cp=camera.position;
+  document.getElementById('hud').innerHTML=
+    `X:${cp.x.toFixed(0)} Y:${cp.y.toFixed(0)} Z:${cp.z.toFixed(0)}<br>` +
+    `GRAINE: ${SEED}`;
+}
+
+// ════════════════════════════════════════════════════════
+//  GAME LOOP
+// ════════════════════════════════════════════════════════
+let last=0;
+function loop(ts){
+  requestAnimationFrame(loop);
+  const dt=Math.min((ts-last)/16.67,3);last=ts;
+
+  physicsStep();
+  camera.rotation.set(pitch,yaw,0,'YXZ');
+  dda();
+  updateHUD();
+
+  // Minimap: redraw base every 2s, player overlay every frame
+  if(ts-lastMMFrame>2000){
+    updateMinimap();
+    lastMMFrame=ts;
+    minimapDirty=false;
+  }
+  // Player dot drawn on top without clearing (so base stays)
+  // We'll just redraw minimap + player each frame on a copy approach
+  // To keep it simple: restore from offscreen then draw player
+  drawPlayerOnMinimap();
+
+  renderer.render(scene,camera);
+}
+
+// Offscreen minimap for base (no player dot)
+const offMM=document.createElement('canvas');
+offMM.width=W;offMM.height=D;
+const offCtx=offMM.getContext('2d');
+
+function updateMinimap(){
+  const img=offCtx.createImageData(W,D);
+  for(let z=0;z<D;z++) for(let x=0;x<W;x++){
+    let surf=0;
+    for(let y=H-1;y>=0;y--){const b=getB(x,y,z);if(b>0){surf=b;break;}}
+    const col=BDEF[surf]?.map||[30,30,30];
+    // shade by height
+    let sh=0;for(let y=0;y<H;y++)if(getB(x,y,z)>0)sh=y;
+    const shade=0.5+sh/H*0.5;
+    const pi=(x+z*W)*4;
+    img.data[pi+0]=Math.min(255,col[0]*shade);
+    img.data[pi+1]=Math.min(255,col[1]*shade);
+    img.data[pi+2]=Math.min(255,col[2]*shade);
+    img.data[pi+3]=255;
+  }
+  offCtx.putImageData(img,0,0);
+}
+
+function drawPlayerOnMinimap(){
+  mmCtx.drawImage(offMM,0,0);
+  const px=camera.position.x, pz=camera.position.z;
+  const sx=Math.round(px), sz=Math.round(pz);
+  // Player position dot
+  mmCtx.fillStyle='#ff2222';
+  mmCtx.beginPath();mmCtx.arc(sx,sz,2,0,Math.PI*2);mmCtx.fill();
+  // Direction line
+  mmCtx.strokeStyle='#ffffff';mmCtx.lineWidth=1.5;
+  mmCtx.beginPath();
+  mmCtx.moveTo(sx,sz);
+  mmCtx.lineTo(sx+Math.sin(-yaw)*6,sz-Math.cos(-yaw)*6);
+  mmCtx.stroke();
+}
+
+// ════════════════════════════════════════════════════════
+//  START
+// ════════════════════════════════════════════════════════
+document.getElementById('play-btn').addEventListener('click',startGame);
+document.getElementById('seed-input').addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+
+function startGame(){
+  const raw=document.getElementById('seed-input').value.trim();
+  if(raw){
+    // Hash the string seed to number
+    let s=0;for(let i=0;i<raw.length;i++)s=(s*31+raw.charCodeAt(i))>>>0;
+    setSeed(s);
+  } else {
+    setSeed((Math.random()*0xFFFFFFFF)>>>0);
+  }
+
+  document.getElementById('start').style.display='none';
+
+  generateWorld();
+  buildMesh();
+  buildHotbar();
+  updateMinimap();
+  respawn();
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
