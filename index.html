@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- ── ÉCRAN DE DÉMARRAGE ── -->
+<!-- ÉCRAN DE DÉMARRAGE -->
 <div id="start">
   <h1>🌿 MiniCraft</h1>
   <p class="sub">Construis et explore un monde procédural</p>
@@ -20,38 +20,38 @@
   <p class="hint">
     Joystick gauche = marcher · Zone droite = regarder<br>
     ⬆ Sauter · ⛏ Casser (clic G) · 🧱 Poser (clic D)<br>
-    ZQSD / WASD + Espace · Molette / 1‑8 = changer bloc
+    ZQSD/WASD+Espace · 1-8/Molette = bloc · C = chat · E = inventaire · M = carte
   </p>
 </div>
 
-<!-- ── ÉCRAN DE CHARGEMENT ── -->
+<!-- ÉCRAN DE CHARGEMENT -->
 <div id="loading">
   <p>GÉNÉRATION DU MONDE…</p>
   <div id="loadbar"><div id="loadfill"></div></div>
 </div>
 
-<!-- ── CANVAS 3D ── -->
+<!-- CANVAS 3D -->
 <canvas id="c"></canvas>
 
-<!-- ── HUD ── -->
+<!-- HUD -->
 <div id="ch"></div>
 <div id="mmwrap">
   <canvas id="mm"></canvas>
-  <div id="mmlbl">CARTE</div>
+  <div id="mmlbl">CARTE  [M]</div>
 </div>
 <div id="hud"></div>
 <div id="toast"></div>
 
-<!-- ── HOTBAR ── -->
+<!-- HOTBAR -->
 <div id="hotbar"></div>
 
-<!-- ── CONTRÔLES TACTILES ── -->
+<!-- CONTRÔLES TACTILES -->
 <div id="jbase"><div id="jknob"></div></div>
 <button id="abtn-break">⛏</button>
 <button id="abtn-place">🧱</button>
 <button id="abtn-jump">⬆</button>
 
-<!-- ── SCRIPTS (ordre de dépendance) ── -->
+<!-- SCRIPTS (ordre de dépendance) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="./constants.js"></script>
 <script src="./world.js"></script>
@@ -60,9 +60,12 @@
 <script src="./renderer.js"></script>
 <script src="./textures.js"></script>
 <script src="./mesh.js"></script>
+<script src="./particles.js"></script>
 <script src="./physics.js"></script>
-<script src="./input.js"></script>
 <script src="./ui.js"></script>
+<script src="./chat.js"></script>
+<script src="./inventory.js"></script>
+<script src="./input.js"></script>
 <script src="./game.js"></script>
 
 </body>
