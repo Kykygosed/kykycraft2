@@ -235,3 +235,74 @@ body {
   background: #27ae60;
   transition: width .2s;
 }
+
+/* ── MESSAGE LIMITE DE CONSTRUCTION ── */
+#buildmsg {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(180, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  border: 2px solid rgba(255,100,100,0.6);
+  text-align: center;
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-shadow: 1px 1px 0 #000;
+  white-space: nowrap;
+}
+#buildmsg.on { opacity: 1; }
+
+/* ── OVERLAY CARTE MONDE ── */
+#fmoverlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.82);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 90;
+  flex-direction: column;
+}
+#fminner {
+  position: relative;
+  overflow: hidden;
+  width: min(90vw, 90vh);
+  height: min(90vw, 90vh);
+  background: #000;
+  border: 3px solid rgba(255,255,255,0.4);
+  box-shadow: 0 0 40px rgba(0,0,0,0.9);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#fminner:active { cursor: grabbing; }
+#fmcanvas, #fminner canvas {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  image-rendering: pixelated;
+  transform-origin: center center;
+}
+#fmclose {
+  position: absolute; top: 8px; right: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: #fff;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 5; pointer-events: auto;
+  background: rgba(0,0,0,0.5);
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+#fmhint {
+  margin-top: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: rgba(255,255,255,0.5);
+}
+/* Minimap cliquable */
+#mm { cursor: pointer; }
+#mm:hover { border-color: rgba(255,255,255,0.9); }
