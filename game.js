@@ -22,7 +22,7 @@ function dda() {
     const b = getB(ix,iy,iz);
     if (b>0 && b!==B.WATER) {
       targetBlock=[ix,iy,iz]; targetFace=[...fn];
-      selBox.position.set(ix+0.5, iy+0.5, iz+0.5);
+      selBox.position.set(ix+0.5,iy+0.5,iz+0.5);
       selBox.visible=true; return;
     }
     if (txM<tyM&&txM<tzM) {
@@ -42,27 +42,25 @@ function dda() {
 function doBreak() {
   if (!targetBlock) return;
   const [bx,by,bz] = targetBlock;
+  const btype = getB(bx, by, bz);
   setB(bx, by, bz, B.AIR);
-  invalidateSurfCache(bx, bz);   // ui.js
-  scheduleChunkRebuild(bx, bz);  // mesh.js
+  invalidateSurfCache(bx, bz);
+  scheduleChunkRebuild(bx, bz);
+  // Particules de casse
+  spawnBreakParticles(bx, by, bz, btype);
 }
 
 function doPlace() {
-  if (!targetBlock || !targetFace) return;
-  const px = targetBlock[0]+targetFace[0];
-  const py = targetBlock[1]+targetFace[1];
-  const pz = targetBlock[2]+targetFace[2];
-
-  // Limite de construction
+  if (!targetBlock||!targetFace) return;
+  const px=targetBlock[0]+targetFace[0];
+  const py=targetBlock[1]+targetFace[1];
+  const pz=targetBlock[2]+targetFace[2];
   if (py > Y_MAX) { showBuildLimit(); return; }
   if (py < Y_MIN) return;
-
-  // Anti-chevauchement joueur
   const cp = camera.position;
-  if (Math.abs(px+0.5-cp.x)<0.45 && Math.abs(pz+0.5-cp.z)<0.45
-      && py+1>cp.y-1.8 && py<cp.y+0.25) return;
-
-  setB(px, py, pz, selBlock);
+  if (Math.abs(px+0.5-cp.x)<0.45&&Math.abs(pz+0.5-cp.z)<0.45
+      &&py+1>cp.y-1.8&&py<cp.y+0.25) return;
+  setB(px,py,pz,selBlock);
   invalidateSurfCache(px, pz);
   scheduleChunkRebuild(px, pz);
 }
@@ -70,12 +68,19 @@ function doPlace() {
 // ══════════════════════════════════════════════════════════════
 //  BOUCLE PRINCIPALE
 // ══════════════════════════════════════════════════════════════
+let lastLoopTime = performance.now();
+
 function loop() {
   requestAnimationFrame(loop);
-  physicsStep();
+  const now = performance.now();
+  const dt  = Math.min((now - lastLoopTime) / 1000, 0.1); // secondes, clampé
+  lastLoopTime = now;
+
+  if (!chatOpen && !inventoryOpen) physicsStep();
   camera.rotation.set(playerPitch, playerYaw, 0, 'YXZ');
   dda();
-  updateVisibleChunks();  // charge/décharge les chunks
+  updateVisibleChunks();
+  updateParticles(dt);
   drawMinimap();
   if (fmOpen) updateFullMapPlayer();
   updateHUD();
@@ -83,27 +88,27 @@ function loop() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  INITIALISATION
+//  INIT
 // ══════════════════════════════════════════════════════════════
 let currentSeed = 0;
 
 function setProgress(pct) {
-  document.getElementById('loadfill').style.width = pct + '%';
+  document.getElementById('loadfill').style.width = pct+'%';
 }
 
 async function startGame() {
   const raw = document.getElementById('seed-in').value.trim();
   if (raw) {
-    let s = 0;
-    for (let i=0; i<raw.length; i++) s = (s*31 + raw.charCodeAt(i)) >>> 0;
-    currentSeed = s;
+    let s=0;
+    for(let i=0;i<raw.length;i++) s=(s*31+raw.charCodeAt(i))>>>0;
+    currentSeed=s;
   } else {
-    currentSeed = ((Math.random()*0xFFFFFF|0)*137 + (Math.random()*0xFFFF|0)) >>> 0;
+    currentSeed=((Math.random()*0xFFFFFF|0)*137+(Math.random()*0xFFFF|0))>>>0;
   }
 
-  document.getElementById('start').style.display = 'none';
-  const ld = document.getElementById('loading');
-  ld.style.display = 'flex';
+  document.getElementById('start').style.display='none';
+  const ld=document.getElementById('loading');
+  ld.style.display='flex';
 
   setProgress(5);
   await loadTextures();
@@ -111,40 +116,37 @@ async function startGame() {
   globalMats = buildMaterials();
 
   setProgress(35);
-  // Initialiser le générateur de monde
   initWorldgen(currentSeed);
 
-  // Pré-générer les chunks autour du spawn (0, 0) pour le respawn
   setProgress(40);
-  for (let dz=-2; dz<=2; dz++)
-    for (let dx=-2; dx<=2; dx++)
-      getOrGenChunk(dx, dz);
+  for (let dz=-2;dz<=2;dz++)
+    for (let dx=-2;dx<=2;dx++)
+      getOrGenChunk(dx,dz);
 
   setProgress(60);
-  // Générer la carte monde entière (fullmap)
   generateFullMap();
 
   setProgress(80);
   buildHotbar();
 
   setProgress(90);
-  // Spawn : trouver la surface au centre
-  let sy = 40;
-  for (let y=40; y>=0; y--) {
-    if (isSolid(getB(0, y, 0))) { sy = y; break; }
+  // Spawn : trouver la surface
+  let sy=40;
+  for (let y=40;y>=0;y--) {
+    if (isSolid(getB(0,y,0))) { sy=y; break; }
   }
-  // +3.5 pour être sûrement au-dessus
-  camera.position.set(0.5, sy + 3.5, 0.5);
-  velY = 0;
+  camera.position.set(0.5, sy+3.5, 0.5);
+  velY=0;
 
   setProgress(100);
   setTimeout(() => {
-    ld.style.display = 'none';
+    ld.style.display='none';
+    lastLoopTime = performance.now();
     requestAnimationFrame(loop);
   }, 200);
 }
 
 document.getElementById('playbtn').addEventListener('click', startGame);
 document.getElementById('seed-in').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startGame();
+  if (e.key==='Enter') startGame();
 });
