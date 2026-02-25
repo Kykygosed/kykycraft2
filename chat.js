@@ -1,96 +1,97 @@
 'use strict';
-
 // ══════════════════════════════════════════════════════════════
-//  CHAT SYSTÈME
-//  C = ouvrir/fermer · Entrée = envoyer · Échap = fermer
+//  CHAT  — aucun listener ici, tout est dans input.js
 // ══════════════════════════════════════════════════════════════
 
 let chatOpen = false;
-const PLAYER_NAME   = 'Test';
-const MAX_HISTORY   = 100;
-const SHOW_LINES    = 10;
-
-const chatHistory = []; // { text, cls }
+const PLAYER_NAME = 'Test';
+const chatHistory = [];
 
 // ── Création DOM ──────────────────────────────────────────────
 const chatRoot = document.createElement('div');
 chatRoot.id = 'chat';
+chatRoot.style.cssText =
+  'position:fixed;bottom:80px;left:14px;width:min(420px,calc(100vw - 28px));' +
+  'z-index:200;font-family:"Press Start 2P",monospace;';
 document.body.appendChild(chatRoot);
 
 const chatLog = document.createElement('div');
 chatLog.id = 'chat-log';
+chatLog.style.cssText =
+  'display:none;flex-direction:column;gap:3px;max-height:200px;overflow:hidden;' +
+  'padding:6px 8px;background:rgba(0,0,0,0.5);margin-bottom:4px;';
 chatRoot.appendChild(chatLog);
 
-const chatBar = document.createElement('div');
-chatBar.id = 'chat-bar';
-chatRoot.appendChild(chatBar);
+const chatBarEl = document.createElement('div');
+chatBarEl.style.cssText =
+  'display:none;background:rgba(80,80,80,0.9);' +
+  'border:1px solid rgba(255,255,255,0.3);padding:5px 8px;align-items:center;';
+chatRoot.appendChild(chatBarEl);
 
 const chatInput = document.createElement('input');
-chatInput.id      = 'chat-input';
-chatInput.type    = 'text';
-chatInput.maxLength = 200;
+chatInput.type        = 'text';
+chatInput.maxLength   = 200;
 chatInput.autocomplete = 'off';
-chatInput.spellcheck   = false;
-chatInput.placeholder  = 'Message... (/ pour commande)';
-chatBar.appendChild(chatInput);
+chatInput.spellcheck  = false;
+chatInput.placeholder = 'Message… ( / pour commande)';
+chatInput.style.cssText =
+  'flex:1;background:rgba(255,255,255,0.12);border:none;outline:none;' +
+  'color:#fff;font-family:"Press Start 2P",monospace;font-size:8px;' +
+  'padding:4px 6px;caret-color:#fff;width:100%;';
+chatBarEl.appendChild(chatInput);
 
 // ── Open / Close ──────────────────────────────────────────────
 function openChat() {
   chatOpen = true;
-  chatRoot.classList.add('open');
+  chatLog.style.display   = 'flex';
+  chatBarEl.style.display = 'flex';
   chatInput.value = '';
-  // Petit délai pour éviter que le "C" lui-même soit saisi
-  setTimeout(() => chatInput.focus(), 20);
   renderChatLog();
+  document.exitPointerLock?.();
+  setTimeout(() => chatInput.focus(), 20);
 }
 
 function closeChat() {
   chatOpen = false;
-  chatRoot.classList.remove('open');
-  chatInput.blur();
-  // Garder les messages visibles 8s puis fade
-  chatRoot.classList.add('recent');
+  chatBarEl.style.display = 'none';
+  // Laisser le log visible quelques secondes
   clearTimeout(chatRoot._fade);
-  chatRoot._fade = setTimeout(() => chatRoot.classList.remove('recent'), 8000);
+  chatRoot._fade = setTimeout(() => {
+    if (!chatOpen) chatLog.style.display = 'none';
+  }, 7000);
 }
 
-// ── Affichage des messages ────────────────────────────────────
-function renderChatLog() {
-  const lines = chatHistory.slice(-SHOW_LINES);
-  chatLog.innerHTML = lines.map(m =>
-    `<div class="chat-msg ${m.cls}">${esc(m.text)}</div>`
-  ).join('');
-  chatLog.scrollTop = chatLog.scrollHeight;
-}
-
+// ── Rendu ─────────────────────────────────────────────────────
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-
+function renderChatLog() {
+  chatLog.innerHTML = chatHistory.slice(-10)
+    .map(m => `<div style="font-size:7px;line-height:1.7;word-break:break-word;
+      text-shadow:1px 1px 0 #000;padding:1px 4px;
+      color:${m.cls==='msg-err'?'#ff6060':m.cls==='msg-sys'?'#aaddff':m.cls==='msg-cmd'?'#ffe066':'#f0f0f0'}">
+      ${esc(m.text)}</div>`).join('');
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
 function addChatMsg(text, cls = 'msg-normal') {
   chatHistory.push({ text, cls });
-  if (chatHistory.length > MAX_HISTORY) chatHistory.shift();
+  if (chatHistory.length > 100) chatHistory.shift();
   renderChatLog();
-  // Flash du log si chat fermé
-  if (!chatOpen) {
-    chatRoot.classList.add('recent');
-    clearTimeout(chatRoot._fade);
-    chatRoot._fade = setTimeout(() => chatRoot.classList.remove('recent'), 8000);
-  }
+  // Montrer le log même si chat fermé
+  chatLog.style.display = 'flex';
+  clearTimeout(chatRoot._fade);
+  chatRoot._fade = setTimeout(() => {
+    if (!chatOpen) chatLog.style.display = 'none';
+  }, 7000);
 }
 
 // ── Envoi ─────────────────────────────────────────────────────
 function sendChat() {
   const text = chatInput.value.trim();
-  chatInput.value = '';
   closeChat();
   if (!text) return;
-
-  if (text.startsWith('/')) {
-    handleCommand(text.slice(1));
-  } else {
-    addChatMsg(`${PLAYER_NAME}: ${text}`, 'msg-normal');
-  }
+  if (text.startsWith('/')) handleCommand(text.slice(1));
+  else addChatMsg(`${PLAYER_NAME}: ${text}`, 'msg-normal');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -98,31 +99,28 @@ function sendChat() {
 // ══════════════════════════════════════════════════════════════
 const COMMANDS = {
   tp: {
-    desc: '/tp @s <x> <y> <z>  —  Téléporte le joueur aux coordonnées',
+    usage: '/tp @s <x> <y> <z>',
+    desc:  'Téléporte le joueur aux coordonnées',
     exec(args) {
-      if (args.length !== 4)   return 'syntax';
-      if (args[0] !== '@s')    return 'syntax';
-      const x = parseFloat(args[1]);
-      const y = parseFloat(args[2]);
-      const z = parseFloat(args[3]);
-      if (isNaN(x) || isNaN(y) || isNaN(z)) return 'syntax';
-      if (y > Y_MAX || y < Y_MIN) {
-        addChatMsg(`Système : Y doit être entre ${Y_MIN} et ${Y_MAX}.`, 'msg-sys');
-        return null;
+      if (args.length !== 4 || args[0] !== '@s') return 'syntax';
+      const x = parseFloat(args[1]), y = parseFloat(args[2]), z = parseFloat(args[3]);
+      if (isNaN(x)||isNaN(y)||isNaN(z)) return 'syntax';
+      if (y < Y_MIN || y > Y_MAX) {
+        addChatMsg(`Y doit être entre ${Y_MIN} et ${Y_MAX}.`, 'msg-sys'); return null;
       }
-      camera.position.set(x + 0.5, y + 1.8, z + 0.5);
+      camera.position.set(x+0.5, y+1.8, z+0.5);
       velY = 0;
-      addChatMsg(`Système : Téléporté en (${Math.floor(x)}, ${Math.floor(y)}, ${Math.floor(z)})`, 'msg-sys');
+      addChatMsg(`Téléporté en (${x|0}, ${y|0}, ${z|0})`, 'msg-sys');
       return null;
     }
   },
   help: {
-    desc: '/help  —  Affiche la liste des commandes',
-    exec(args) {
-      addChatMsg('══ Commandes disponibles ══', 'msg-sys');
-      for (const [, cmd] of Object.entries(COMMANDS)) {
-        addChatMsg(cmd.desc, 'msg-sys');
-      }
+    usage: '/help',
+    desc:  'Affiche la liste des commandes',
+    exec() {
+      addChatMsg('══ Commandes ══', 'msg-sys');
+      for (const cmd of Object.values(COMMANDS))
+        addChatMsg(`${cmd.usage} — ${cmd.desc}`, 'msg-sys');
       return null;
     }
   }
@@ -131,35 +129,15 @@ const COMMANDS = {
 function handleCommand(raw) {
   addChatMsg('/' + raw, 'msg-cmd');
   const parts = raw.trim().split(/\s+/);
-  const name  = parts[0].toLowerCase();
-  const args  = parts.slice(1);
-  const cmd   = COMMANDS[name];
-
-  if (!cmd) {
-    addChatMsg('Commande introuvable. Tapez /help pour la liste des commandes.', 'msg-err');
-    return;
-  }
-  const result = cmd.exec(args);
-  if (result === 'syntax') {
+  const cmd   = COMMANDS[parts[0].toLowerCase()];
+  if (!cmd) { addChatMsg('Commande introuvable. Tapez /help pour la liste.', 'msg-err'); return; }
+  if (cmd.exec(parts.slice(1)) === 'syntax')
     addChatMsg('Erreur de syntaxe dans la commande.', 'msg-err');
-  }
 }
 
-// ── Clavier (capture = avant input.js) ───────────────────────
-document.addEventListener('keydown', e => {
-  if (inventoryOpen) return;
-
-  if (e.code === 'KeyC' && !chatOpen) {
-    e.preventDefault();
-    e.stopPropagation();
-    openChat();
-    return;
-  }
-
-  if (chatOpen) {
-    if (e.code === 'Enter')  { e.preventDefault(); e.stopPropagation(); sendChat(); }
-    if (e.code === 'Escape') { e.preventDefault(); e.stopPropagation(); closeChat(); }
-    // Bloquer tout déplacement
-    e.stopPropagation();
-  }
-}, true); // capture phase
+// Listener direct sur l'input (le plus fiable pour capturer les touches)
+chatInput.addEventListener('keydown', e => {
+  e.stopPropagation(); // ne pas propager vers document
+  if (e.key === 'Enter')  { e.preventDefault(); sendChat(); }
+  if (e.key === 'Escape') { e.preventDefault(); closeChat(); }
+});
